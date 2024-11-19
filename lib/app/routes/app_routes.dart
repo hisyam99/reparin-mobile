@@ -21,6 +21,7 @@ abstract class Routes {
   static const BOOKUPCOMING = _Paths.BOOKUPCOMING;
   static const BOOKCOMPLETED = _Paths.BOOKCOMPLETED;
   static const BOOKCANCELLED = _Paths.BOOKCANCELLED;
+  static const BOOKSUCCESS = _Paths.BOOKSUCCESS;
   static const PAYMENTMETHOD = _Paths.PAYMENTMETHOD;
   static const addCard = _Paths
       .addCard; // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card
@@ -62,6 +63,7 @@ abstract class _Paths {
   static const BOOKUPCOMING = '/bookupcoming';
   static const BOOKCOMPLETED = '/bookcompleted';
   static const BOOKCANCELLED = '/bookcancelled';
+  static const BOOKSUCCESS = '/booksuccess';
   static const PAYMENTMETHOD = '/paymentmethod';
   static const addCard = '/payment/method/card';
   static const REVIEWSUMMARY = '/reviewsummary';

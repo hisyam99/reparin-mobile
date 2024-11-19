@@ -24,6 +24,8 @@ import '../modules/bookcompleted/bindings/bookcompleted_binding.dart';
 import '../modules/bookcompleted/views/bookcompleted_views.dart';
 import '../modules/bookcancelled/bindings/bookcancelled_binding.dart';
 import '../modules/bookcancelled/views/bookcancelled_views.dart';
+import '../modules/bookingsuccess/bindings/booksuccess_binding.dart';
+import '../modules/bookingsuccess/views/booksuccess_views.dart';
 import '../modules/add_card/bindings/add_card_binding.dart';
 import '../modules/add_card/views/add_card_view.dart';
 import '../modules/paymentsmethod/bindings/paymentmethod_bindings.dart';
@@ -100,6 +102,7 @@ class AppPages {
   static const BOOKUPCOMING = Routes.BOOKUPCOMING;
   static const BOOKCOMPLETED = Routes.BOOKCOMPLETED;
   static const BOOKCANCELLED = Routes.BOOKCANCELLED;
+  static const BOOKSUCCESS = Routes.BOOKSUCCESS;
   static const PAYMENTMETHOD = Routes.PAYMENTMETHOD;
   static const addCard = Routes.addCard;
   static const REVIEWSUMMARY = Routes.REVIEWSUMMARY;
@@ -249,6 +252,12 @@ class AppPages {
       page: () =>
           const BookcancelledViews(), // Ensure this points to CategoryView
       binding: BookcancelledBinding(),
+    ),
+    GetPage(
+      name: _Paths.BOOKSUCCESS,
+      page: () =>
+          const BooksuccessViews(), // Ensure this points to CategoryView
+      binding: BooksuccessBinding(),
     ),
     GetPage(
       name: _Paths.PAYMENTMETHOD,

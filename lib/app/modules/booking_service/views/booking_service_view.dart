@@ -144,7 +144,7 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
 
                     if (success) {
                       Get.offAllNamed(
-                          '/home'); // Navigate to home after success
+                          '/booksuccess'); // Navigate to home after success
                     }
                   },
                   child: const Text(
