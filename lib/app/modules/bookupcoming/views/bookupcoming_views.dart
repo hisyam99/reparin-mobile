@@ -4,7 +4,7 @@ import '../../../data/models/booking_data_model.dart';
 import '../controllers/bookupcoming_controller.dart';
 
 class MyBookingsView extends GetView<BookupcomingController> {
-  const MyBookingsView({Key? key}) : super(key: key);
+  const MyBookingsView({super.key});
 
   @override
   Widget build(BuildContext context) {

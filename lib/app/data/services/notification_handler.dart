@@ -80,7 +80,7 @@ class FirebaseMessagingHandler {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin,
   ) async {
     // Pengaturan notifikasi untuk Android
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
       _channelId,
       _channelName,
       channelDescription: _channelDesc,
@@ -90,7 +90,7 @@ class FirebaseMessagingHandler {
     );
 
     // Pengaturan notifikasi untuk iOS
-    var iOSPlatformChannelSpecifics = DarwinNotificationDetails();
+    var iOSPlatformChannelSpecifics = const DarwinNotificationDetails();
 
     // Detail pengaturan notifikasi untuk platform Android dan iOS
     var platformChannelSpecifics = NotificationDetails(
