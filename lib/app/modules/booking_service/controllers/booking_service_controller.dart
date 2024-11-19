@@ -52,6 +52,7 @@ class ServiceBookingController extends GetxController {
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'ticker',
+      playSound: false,
     );
 
     var iOSPlatformChannelSpecifics = const DarwinNotificationDetails();
