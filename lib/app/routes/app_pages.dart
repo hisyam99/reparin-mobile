@@ -84,7 +84,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.ONBOARDING;
+  static const INITIAL = Routes.HOME;
   static const LOGIN = Routes.LOGIN;
   static const REGISTER = Routes.REGISTER;
   static const PROMO = Routes.PROMO;
@@ -163,7 +163,7 @@ class AppPages {
       AuthenticationBinding(),
     ]),
     GetPage(
-      name: '/service-booking',
+      name: _Paths.SERVICEBOOKING,
       page: () {
         final args = Get.arguments as Map<String, dynamic>;
         return ServiceBookingView(

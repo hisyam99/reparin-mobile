@@ -17,6 +17,7 @@ abstract class Routes {
   static const POPULAR = _Paths.POPULAR;
   static const MESSAGE = _Paths.MESSAGE;
   static const NOTIFICATION = _Paths.NOTIFICATION;
+  static const SERVICEBOOKING = _Paths.SERVICEBOOKING;
   static const bookService = _Paths.BookService;
   static const BOOKUPCOMING = _Paths.BOOKUPCOMING;
   static const BOOKCOMPLETED = _Paths.BOOKCOMPLETED;
@@ -59,6 +60,7 @@ abstract class _Paths {
   static const POPULAR = '/popular-service';
   static const MESSAGE = '/message';
   static const NOTIFICATION = '/notification';
+  static const SERVICEBOOKING = '/service-booking';
   static const BookService = '/book/service';
   static const BOOKUPCOMING = '/bookupcoming';
   static const BOOKCOMPLETED = '/bookcompleted';

@@ -11,7 +11,7 @@ var isBookingSuccessful = false.obs;
       isBookingSuccessful.value = true;
 
       // Setelah 3 detik, navigasikan ke halaman /home
-      Timer(const Duration(seconds: 3), () {
+      Timer(const Duration(seconds: 5), () {
         Get.offAllNamed('/home');
       });
     }
