@@ -29,11 +29,12 @@ Future<void> main() async {
           secondary: const Color(0xFF0093B7),
           surface: Colors.white,
         ),
-        // scaffoldBackgroundColor: Color(0xFFF2F2F2), // Match the background color
+        scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF0093B7),
+          iconTheme: IconThemeData(color: Colors.white),
           titleTextStyle: TextStyle(
-            // color: Colors.white,
+            color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -58,6 +59,13 @@ Future<void> main() async {
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
+          ),
+        ),
+        tabBarTheme: const TabBarTheme(
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicator: UnderlineTabIndicator(
+            borderSide: BorderSide(color: Colors.white, width: 2),
           ),
         ),
       ),
