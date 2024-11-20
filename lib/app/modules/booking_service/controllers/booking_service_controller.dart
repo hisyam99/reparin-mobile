@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:video_player/video_player.dart';
 import '../../../data/models/service_order_model.dart';
 import '../../../data/models/profile_model.dart';
 import '../../../data/services/notification_handler.dart';
@@ -12,12 +15,19 @@ class ServiceBookingController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseMessagingHandler _notificationHandler = FirebaseMessagingHandler();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  
+  final ImagePicker _picker = ImagePicker();
+
   final Rx<Profile> userProfile = Profile.empty().obs;
   final RxBool isLoading = false.obs;
   
   final descriptionController = TextEditingController();
   final addressController = TextEditingController();
+  
+  // Media handling
+  Rx<File?> imageFile = Rx<File?>(null);
+  Rx<File?> videoFile = Rx<File?>(null);
+  Rx<VideoPlayerController?> videoPlayerController = Rx<VideoPlayerController?>(null);
+  RxBool isVideo = false.obs;
   
   @override
   void onInit() {
@@ -70,6 +80,112 @@ class ServiceBookingController extends GetxController {
     );
   }
 
+  Future<void> pickImage(ImageSource source) async {
+    try {
+      final XFile? pickedImage = await _picker.pickImage(
+        source: source,
+        imageQuality: 80,
+      );
+      
+      if (pickedImage != null) {
+        imageFile.value = File(pickedImage.path);
+        videoFile.value = null;
+        isVideo.value = false;
+      }
+    } catch (e) {
+      print('Error picking image: $e');
+      Get.snackbar('Error', 'Failed to pick image');
+    }
+  }
+
+  Future<void> pickVideo(ImageSource source) async {
+    try {
+      final XFile? pickedVideo = await _picker.pickVideo(
+        source: source,
+        maxDuration: const Duration(minutes: 5),
+      );
+      
+      if (pickedVideo != null) {
+        videoFile.value = File(pickedVideo.path);
+        imageFile.value = null;
+        isVideo.value = true;
+        
+        // Initialize video player
+        if (videoPlayerController.value != null) {
+          await videoPlayerController.value!.dispose();
+        }
+        
+        videoPlayerController.value = VideoPlayerController.file(videoFile.value!)
+          ..initialize().then((_) {
+            update();
+          });
+      }
+    } catch (e) {
+      print('Error picking video: $e');
+      Get.snackbar('Error', 'Failed to pick video');
+    }
+  }
+
+  void showMediaPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Camera'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showMediaTypeSelection(context, ImageSource.camera);
+                }
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Gallery'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showMediaTypeSelection(context, ImageSource.gallery);
+                }
+              ),
+            ],
+          ),
+        );
+      }
+    );
+  }
+
+  void _showMediaTypeSelection(BuildContext context, ImageSource source) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text('Photo'),
+                onTap: () {
+                  pickImage(source);
+                  Navigator.pop(context);
+                }
+              ),
+              ListTile(
+                leading: const Icon(Icons.videocam),
+                title: const Text('Video'),
+                onTap: () {
+                  pickVideo(source);
+                  Navigator.pop(context);
+                }
+              ),
+            ],
+          ),
+        );
+      }
+    );
+  }
+
   Future<bool> createServiceOrder({
     required String serviceType,
     required String providerName,
@@ -97,10 +213,7 @@ class ServiceBookingController extends GetxController {
         address: addressController.text,
       );
 
-      // Create the order in Firestore
       await _firestore.collection('service_orders').add(serviceOrder.toJson());
-      
-      // Show local notification
       await showBookingSuccessNotification();
       
       Get.snackbar(
@@ -126,6 +239,7 @@ class ServiceBookingController extends GetxController {
   void onClose() {
     descriptionController.dispose();
     addressController.dispose();
+    videoPlayerController.value?.dispose();
     super.onClose();
   }
 }

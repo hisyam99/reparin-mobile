@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 import '../controllers/booking_service_controller.dart';
 
 class ServiceBookingView extends GetView<ServiceBookingController> {
@@ -8,11 +9,11 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
   final double price;
 
   const ServiceBookingView({
-    super.key,
+    Key? key,
     required this.serviceType,
     required this.providerName,
     required this.price,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +40,26 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Media Preview Section
+              _buildMediaPreview(),
+              const SizedBox(height: 16),
+
+              // Media Picker Button
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: () => controller.showMediaPicker(context),
+                  icon: const Icon(Icons.add_a_photo),
+                  label: const Text('Add Photo/Video'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
               // Service Details Card
               Card(
                 child: Padding(
@@ -91,7 +112,7 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
               ),
               const SizedBox(height: 16),
 
-              // Service Description
+              // Description TextField
               TextField(
                 controller: controller.descriptionController,
                 maxLines: 3,
@@ -103,7 +124,7 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
               ),
               const SizedBox(height: 16),
 
-              // Address
+              // Address TextField
               TextField(
                 controller: controller.addressController,
                 maxLines: 2,
@@ -143,8 +164,7 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
                     );
 
                     if (success) {
-                      Get.offAllNamed(
-                          '/booksuccess'); // Navigate to home after success
+                      Get.offAllNamed('/booksuccess');
                     }
                   },
                   child: const Text(
@@ -160,6 +180,164 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
           ),
         );
       }),
+    );
+  }
+
+  Widget _buildMediaPreview() {
+    return Center(
+      child: Container(
+        height: 300,
+        width: 300,
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          border: Border.all(color: Colors.grey[300]!),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: controller.imageFile.value != null ||
+                controller.videoFile.value != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: controller.imageFile.value != null
+                    ? Stack(
+                        children: [
+                          SizedBox.expand(
+                            child: Image.file(
+                              controller.imageFile.value!,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.black.withOpacity(0.0),
+                                    Colors.black.withOpacity(0.3),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: IconButton(
+                              onPressed: () {
+                                controller.imageFile.value = null;
+                                controller.update();
+                              },
+                              icon: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.5),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : ValueListenableBuilder<VideoPlayerValue>(
+                        valueListenable: controller.videoPlayerController.value!,
+                        builder: (context, videoState, child) {
+                          return Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              SizedBox.expand(
+                                child: AspectRatio(
+                                  aspectRatio: videoState.aspectRatio,
+                                  child: VideoPlayer(
+                                      controller.videoPlayerController.value!),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.5),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: IconButton(
+                                  icon: Icon(
+                                    videoState.isPlaying
+                                        ? Icons.pause
+                                        : Icons.play_arrow,
+                                    size: 30,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    if (videoState.isPlaying) {
+                                      controller.videoPlayerController.value!
+                                          .pause();
+                                    } else {
+                                      controller.videoPlayerController.value!
+                                          .play();
+                                    }
+                                  },
+                                ),
+                              ),
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: IconButton(
+                                  onPressed: () {
+                                    controller.videoFile.value = null;
+                                    controller.videoPlayerController.value
+                                        ?.dispose();
+                                    controller.videoPlayerController.value = null;
+                                    controller.update();
+                                  },
+                                  icon: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.5),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.add_photo_alternate_outlined,
+                    size: 48,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Add Photo/Video',
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+      ),
     );
   }
 
