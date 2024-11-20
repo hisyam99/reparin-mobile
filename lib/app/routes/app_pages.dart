@@ -121,24 +121,18 @@ class AppPages {
   static const CONTACT_US = Routes.CONTACT_US;
 
   static final routes = [
-    GetPage(
-      name: _Paths.LOGIN,
-      page: () => const LoginView(),
-      bindings: [
-        RegisterBinding(),
-        LoginBinding(),
-        NavbarBinding(),
-        ProfileBinding()
-        ]),
-    GetPage(
-      name: _Paths.REGISTER,
-      page: () => const RegisterView(),
-      bindings: [
-        RegisterBinding(),
-        LoginBinding(),
-        NavbarBinding(),
-        ProfileBinding()
-        ]),
+    GetPage(name: _Paths.LOGIN, page: () => const LoginView(), bindings: [
+      RegisterBinding(),
+      LoginBinding(),
+      NavbarBinding(),
+      ProfileBinding()
+    ]),
+    GetPage(name: _Paths.REGISTER, page: () => const RegisterView(), bindings: [
+      RegisterBinding(),
+      LoginBinding(),
+      NavbarBinding(),
+      ProfileBinding()
+    ]),
     GetPage(name: _Paths.HOME, page: () => const HomeView(), bindings: [
       HomeBinding(),
       NavbarBinding(),
@@ -154,7 +148,7 @@ class AppPages {
         ]),
     GetPage(
       name: _Paths.PROMO,
-      page: () => const PromoView(), // Ensure this points to CategoryView
+      page: () => const PromoView(),
       binding: PromoBinding(),
     ),
     GetPage(name: _Paths.PROFILE, page: () => const ProfileViews(), bindings: [
@@ -185,165 +179,144 @@ class AppPages {
         ]),
     GetPage(
       name: _Paths.CATEGORY,
-      page: () => const CategoryView(), // Ensure this points to CategoryView
+      page: () => const (),
       binding: CategoryBinding(),
     ),
     GetPage(
       name: _Paths.ONBOARDING,
-      page: () => const OnboardingView(), // Ensure this points to CategoryView
+      page: () => const OnboardingView(),
       binding: OnboardingBinding(),
     ),
     GetPage(
       name: _Paths.STARTED,
-      page: () => const StartedView(), // Ensure this points to CategoryView
+      page: () => const StartedView(),
       binding: StartedBinding(),
     ),
-    GetPage(
-      name: _Paths.EXPLORE,
-      page: () => const ExploreView(), // Ensure this points to CategoryView
-      bindings: [
-        ExploreBinding(),
-        NavbarBinding(),
-      ]),
-    GetPage(
-      name: _Paths.BOOKMARK,
-      page: () => const BookmarkView(), // Ensure this points to CategoryView
-      bindings: [
-        BookmarkBinding(),
-        NavbarBinding(),
-      ]),
+    GetPage(name: _Paths.EXPLORE, page: () => const ExploreView(), bindings: [
+      ExploreBinding(),
+      NavbarBinding(),
+    ]),
+    GetPage(name: _Paths.BOOKMARK, page: () => const BookmarkView(), bindings: [
+      BookmarkBinding(),
+      NavbarBinding(),
+    ]),
     GetPage(
       name: _Paths.POPULAR,
-      page: () =>
-          const PopularServiceView(), // Ensure this points to CategoryView
+      page: () => const PopularServiceView(),
       binding: PopularServiceBinding(),
     ),
-    GetPage(
-      name: _Paths.MESSAGE,
-      page: () => const MessageView(), // Ensure this points to CategoryView
-      bindings: [
-        MessageBinding(),
-        NavbarBinding(),
-      ]),
+    GetPage(name: _Paths.MESSAGE, page: () => const MessageView(), bindings: [
+      MessageBinding(),
+      NavbarBinding(),
+    ]),
     GetPage(
       name: _Paths.NOTIFICATION,
-      page: () =>
-          const NotificationView(), // Ensure this points to CategoryView
+      page: () => const NotificationView(),
       binding: NotificationBinding(),
     ),
     GetPage(
       name: _Paths.BookService,
-      page: () => const BookServiceView(), // Ensure this points to CategoryView
+      page: () => const BookServiceView(),
       binding: BookServiceBinding(),
     ),
     GetPage(
       name: _Paths.BOOKUPCOMING,
-      page: () => const MyBookingsView(), // Ensure this points to CategoryView
+      page: () => const MyBookingsView(),
       binding: BookupcomingBinding(),
     ),
     GetPage(
       name: _Paths.BOOKCOMPLETED,
-      page: () =>
-          const BookcompletedViews(), // Ensure this points to CategoryView
+      page: () => const BookcompletedViews(),
       binding: BookcompletedBinding(),
     ),
     GetPage(
       name: _Paths.BOOKCANCELLED,
-      page: () =>
-          const BookcancelledViews(), // Ensure this points to CategoryView
+      page: () => const BookcancelledViews(),
       binding: BookcancelledBinding(),
     ),
     GetPage(
       name: _Paths.BOOKSUCCESS,
-      page: () =>
-          const BooksuccessViews(), // Ensure this points to CategoryView
+      page: () => const BooksuccessViews(),
       binding: BooksuccessBinding(),
     ),
     GetPage(
       name: _Paths.PAYMENTMETHOD,
-      page: () =>
-          const PaymentmethodView(), // Ensure this points to CategoryView
+      page: () => const PaymentmethodView(),
       binding: PaymentmethodBinding(),
     ),
     GetPage(
       name: _Paths.addCard,
-      page: () => const AddCardView(), // Ensure this points to CategoryView
+      page: () => const AddCardView(),
       binding: AddCardBinding(),
     ),
     GetPage(
       name: _Paths.REVIEWSUMMARY,
-      page: () =>
-          const ReviewsummaryView(), // Ensure this points to CategoryView
+      page: () => const ReviewsummaryView(),
       binding: ReviewSummaryBinding(),
     ),
     GetPage(
       name: _Paths.SUCCESSBOOKING,
-      page: () =>
-          const SuccessbookingView(), // Ensure this points to CategoryView
+      page: () => const SuccessbookingView(),
       binding: SuccessbookingBinding(),
     ),
     GetPage(
       name: _Paths.ERECEIPT,
-      page: () => const EreceiptView(), // Ensure this points to CategoryView
+      page: () => const EreceiptView(),
       binding: EreceiptBinding(),
     ),
     GetPage(
       name: _Paths.PRIVACYPOLICY,
-      page: () =>
-          const PrivacypolicyView(), // Ensure this points to CategoryView
+      page: () => const PrivacypolicyView(),
       binding: PrivacypolicyBinding(),
     ),
     GetPage(
       name: _Paths.CONFIRM_ADDRESS,
-      page: () =>
-          const ConfirmAddressView(), // Ensure this points to CategoryView
+      page: () => const ConfirmAddressView(),
       binding: ConfirmAddressBinding(),
     ),
     GetPage(
       name: _Paths.servicePage,
-      page: () => const ServicePageView(), // Ensure this points to CategoryView
+      page: () => const ServicePageView(),
       binding: ServicePageBinding(),
     ),
     GetPage(
       name: _Paths.servicePageConfirmation,
-      page: () =>
-          const ServicePageConfirmationView(), // Ensure this points to CategoryView
+      page: () => const ServicePageConfirmationView(),
       binding: ServicePageConfirmationBinding(),
     ),
     GetPage(
       name: _Paths.LOCATIONINPUT,
-      page: () => const GetConnectView(), // Ensure this points to CategoryView
+      page: () => const GetConnectView(),
       binding: GetConnectBinding(),
     ),
     GetPage(
       name: _Paths.SERVICE,
-      page: () =>
-          const ServiceProviderView(), // Ensure this points to CategoryView
+      page: () => const ServiceProviderView(),
       binding: ServiceProviderBinding(),
     ),
     GetPage(
       name: _Paths.REVIEW,
-      page: () => const reviewView(), // Ensure this points to CategoryView
+      page: () => const reviewView(),
       binding: reviewBinding(),
     ),
     GetPage(
       name: _Paths.GALLARY,
-      page: () => const GalleryView(), // Ensure this points to CategoryView
+      page: () => const GalleryView(),
       binding: GalleryBinding(),
     ),
     GetPage(
       name: _Paths.ABOUT,
-      page: () => const AboutView(), // Ensure this points to CategoryView
+      page: () => const AboutView(),
       binding: AboutBinding(),
     ),
     GetPage(
       name: _Paths.HELP_CENTER_FAQ,
-      page: () => const FaqView(), // Ensure this points to CategoryView
+      page: () => const FaqView(),
       binding: FaqBinding(),
     ),
     GetPage(
       name: _Paths.CONTACT_US,
-      page: () => const ContactUsView(), // Ensure this points to CategoryView
+      page: () => const ContactUsView(),
       binding: ContactUsBinding(),
     ),
   ];

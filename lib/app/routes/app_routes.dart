@@ -24,8 +24,7 @@ abstract class Routes {
   static const BOOKCANCELLED = _Paths.BOOKCANCELLED;
   static const BOOKSUCCESS = _Paths.BOOKSUCCESS;
   static const PAYMENTMETHOD = _Paths.PAYMENTMETHOD;
-  static const addCard = _Paths
-      .addCard; // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card.  // Additional path for adding a payment card
+  static const addCard = _Paths.addCard;
   static const REVIEWSUMMARY = _Paths.REVIEWSUMMARY;
   static const SUCCESSBOOKING = _Paths.SUCCESSBOOKING;
   static const ERECEIPT = _Paths.ERECEIPT;
