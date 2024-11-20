@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.reparin_mobile"
-    compileSdk = 34
+    compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -31,7 +31,6 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        multiDexEnabled true
     }
 
     buildTypes {

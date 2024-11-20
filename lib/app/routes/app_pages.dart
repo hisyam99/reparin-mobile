@@ -16,6 +16,8 @@ import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/profileView/bindings/profileView_binding.dart';
 import '../modules/profileView/views/profileView_view.dart';
+import '../modules/bookService/bindings/bookService_bindings.dart';
+import '../modules/bookService/views/bookService_views.dart';
 import '../modules/bookupcoming/bindings/bookupcoming_binding.dart';
 import '../modules/bookupcoming/views/bookupcoming_views.dart';
 import '../modules/bookcompleted/bindings/bookcompleted_binding.dart';
@@ -228,6 +230,11 @@ class AppPages {
       page: () =>
           const NotificationView(), // Ensure this points to CategoryView
       binding: NotificationBinding(),
+    ),
+    GetPage(
+      name: _Paths.BookService,
+      page: () => const BookServiceView(), // Ensure this points to CategoryView
+      binding: BookServiceBinding(),
     ),
     GetPage(
       name: _Paths.BOOKUPCOMING,

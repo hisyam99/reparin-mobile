@@ -110,7 +110,6 @@ class ServiceBookingController extends GetxController {
         imageFile.value = null;
         isVideo.value = true;
         
-        // Initialize video player
         if (videoPlayerController.value != null) {
           await videoPlayerController.value!.dispose();
         }
