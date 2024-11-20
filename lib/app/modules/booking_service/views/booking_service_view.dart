@@ -9,11 +9,11 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
   final double price;
 
   const ServiceBookingView({
-    Key? key,
+    super.key,
     required this.serviceType,
     required this.providerName,
     required this.price,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

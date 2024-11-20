@@ -51,6 +51,10 @@ dependencies:
   audioplayers: ^6.1.0
   get_storage: ^2.1.1
   video_player: ^2.9.2
+  # speech to text package
+  speech_to_text: ^6.6.2
+  # permission handler for microphone
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:
