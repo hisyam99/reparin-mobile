@@ -78,13 +78,15 @@ import '../modules/navbar/bindings/navbar_binding.dart';
 import '../modules/navbarMerdeka/bindings/navbar_binding.dart';
 import '../modules/getconnect/bindings/getconnect_binding.dart';
 import '../modules/getconnect/views/getconnect_view.dart';
+import '../modules/settings/bindings/settings_binding.dart';
+import '../modules/settings/views/settings_view.dart';
 
 part 'app_routes.dart';
 
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.ONBOARDING;
+  static const INITIAL = Routes.LOGIN;
   static const LOGIN = Routes.LOGIN;
   static const REGISTER = Routes.REGISTER;
   static const PROMO = Routes.PROMO;
@@ -119,6 +121,7 @@ class AppPages {
   static const ABOUT = Routes.ABOUT;
   static const HELP_CENTER_FAQ = Routes.HELP_CENTER_FAQ;
   static const CONTACT_US = Routes.CONTACT_US;
+  static const SETTINGS = Routes.SETTINGS;
 
   static final routes = [
     GetPage(name: _Paths.LOGIN, page: () => const LoginView(), bindings: [
@@ -318,6 +321,11 @@ class AppPages {
       name: _Paths.CONTACT_US,
       page: () => const ContactUsView(),
       binding: ContactUsBinding(),
+    ),
+    GetPage(
+      name: _Paths.SETTINGS,
+      page: () => const SettingsView(),
+      binding: SettingsBinding(),
     ),
   ];
 }

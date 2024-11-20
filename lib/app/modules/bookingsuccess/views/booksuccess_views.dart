@@ -1,30 +1,25 @@
-import 'dart:async'; // Untuk Timer
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:audioplayers/audioplayers.dart'; // Untuk audio player
 import '../controllers/booksuccess_controller.dart';
-import 'package:reparin_mobile/app/modules/navbar/views/navbar_view.dart';
 
 class BooksuccessViews extends GetView<BooksuccessController> {
   const BooksuccessViews({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Audio Player instance
-    final AudioPlayer audioPlayer = AudioPlayer();
+Widget build(BuildContext context) {
+  // Automatically navigate to the home page after 5 seconds
+  Timer(const Duration(seconds: 5), () {
+    Get.offAllNamed('/home');
+  });
 
-    // URL untuk lagu jingle pendek (Anda bisa mengganti URL di sini)
-    const String jingleUrl = 'https://www.myinstants.com/media/sounds/thick-of-it.mp3';
-
-    // Mulai memainkan jingle saat halaman dimuat
-    audioPlayer.play(UrlSource(jingleUrl));
-
-    // Navigasi otomatis ke halaman /home setelah 3 detik
-    Timer(const Duration(seconds: 8), () {
-      audioPlayer.stop(); // Hentikan jingle sebelum navigasi
-      Get.offAllNamed('/home');
-    });
-
+  // Explicitly call to play the jingle if a URL exists
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (controller.audioUrl.value.isNotEmpty) {
+      controller.playJingle();
+    }
+  });
+  
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -38,17 +33,17 @@ class BooksuccessViews extends GetView<BooksuccessController> {
           ),
         ),
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.check_circle,
               size: 80,
               color: Colors.green,
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'Booking Successful',
               style: TextStyle(
                 fontSize: 24,
@@ -59,7 +54,6 @@ class BooksuccessViews extends GetView<BooksuccessController> {
           ],
         ),
       ),
-      bottomNavigationBar: const CustomBottomNavigationBar(), // Navigation Bar
     );
   }
 }

@@ -144,7 +144,7 @@ class ProfileViews extends GetView<ProfileController> {
                     title: 'Settings',
                     icon: Icons.settings,
                     onTap: () {
-                      // Navigate to settings
+                      Get.toNamed('/settings');
                     },
                   ),
                   _buildProfileOption(

@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:reparin_mobile/app/modules/profile/controllers/profile_controller.dart';
+import 'package:reparin_mobile/app/modules/bookingsuccess/controllers/booksuccess_controller.dart';
+import 'package:reparin_mobile/app/modules/settings/controllers/settings_controller.dart';
 import 'package:reparin_mobile/firebase_options.dart';
 import 'app/data/services/authentication/controllers/authentication_controller.dart';
 import 'app/modules/navbar/controllers/navbar_controller.dart';
@@ -15,6 +17,8 @@ Future<void> main() async {
   );
   await FirebaseMessagingHandler().initPushNotification();
   await FirebaseMessagingHandler().initLocalNotification();
+  Get.put(BooksuccessController());
+  Get.put(SettingsController());
   Get.put(AuthenticationController(), permanent: true);
   Get.put(NavbarController(), permanent: true);
   Get.put(ProfileController(), permanent: true);
