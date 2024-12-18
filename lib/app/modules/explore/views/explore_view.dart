@@ -12,7 +12,7 @@ class ExploreView extends GetView<ExploreController> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFF0093B7),
+        backgroundColor: const Color.fromRGBO(0, 147, 183, 1),
         title: const Text(
           'Explore',
           style: TextStyle(

@@ -108,6 +108,7 @@ flutter:
     - assets/camera_repair1.png
     - assets/promo_kemerdekaan_17k.png
     - assets/promo_merdeka_17_percent.png
+    - assets/crying_phone.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
