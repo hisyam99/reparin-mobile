@@ -1,5 +1,3 @@
-// File: /lib/app/modules/getconnect/controllers/getconnect_controller.dart
-
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';

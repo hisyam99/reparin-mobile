@@ -11,7 +11,7 @@ import '../../../data/models/profile_model.dart';
 import '../../../data/services/notification_handler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
-import '../../../data/services/getconnect_controller.dart';
+import '../../../data/services/location_controller.dart';
 
 class ServiceBookingController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

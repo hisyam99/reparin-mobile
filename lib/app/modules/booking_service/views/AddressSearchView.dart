@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../data/services/getconnect_controller.dart';
+import '../../../data/services/location_controller.dart';
 
 class AddressSearchView extends StatelessWidget {
   final Function(String) onAddressSelected;

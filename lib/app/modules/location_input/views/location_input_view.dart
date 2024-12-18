@@ -1,78 +1,151 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/location_input_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../data/services/location_controller.dart';
+import '../../microphone/controllers/microphone_controller.dart';
+import '../../maps/controllers/maps_controller.dart'; // Import MapsController
 
-class LocationInputView extends GetView<LocationInputController> {
-  const LocationInputView({super.key});
+class GetConnectView extends GetView<GetConnectController> {
+  const GetConnectView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController searchController = TextEditingController();
+    final MicrophoneController micController = Get.put(MicrophoneController());
+    final MapsController mapsController = Get.put(MapsController());
+
+    // Function to open Google Maps with the provided coordinates
+    void openMap(double latitude, double longitude) async {
+      final Uri url = Uri.parse(
+          'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude');
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        throw 'Could not open the map.';
+      }
+    }
+
+    // Function to perform the search based on the query
+    void performSearch(String query) {
+      if (query.isNotEmpty) {
+        controller.searchAddress(query);
+      }
+    }
+
+    // Function to use the current location for searching
+    void useCurrentLocation() {
+      mapsController.getCurrentLocation().then((_) {
+        final position = mapsController.currentPosition.value;
+        if (position != null) {
+          final query = "${position.latitude},${position.longitude}";
+          searchController.text = query;
+          performSearch(query);
+        }
+      });
+    }
+
+    void onAddressSelected(String selectedAddress) {
+      searchController.text = selectedAddress;
+      performSearch(selectedAddress);
+      Get.toNamed(
+        '/selected-location',
+        arguments: selectedAddress,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Pencarian Alamat'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
+          onPressed: () {
+            Get.back();
+          },
         ),
-        title: const Text('Enter Your Location'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Search input field
-            TextField(
-              controller: controller.searchController,
-              decoration: InputDecoration(
-                hintText: 'Search for a location...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: controller.clearSearch,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onChanged: controller.onSearchChanged,
-            ),
-            const SizedBox(height: 16),
-            // Use current location button
-            InkWell(
-              onTap: () {
-                controller.useCurrentLocation();
-                controller.searchController.text = 'Current Location';
-              },
-              child: const Row(
-                children: [
-                  Icon(Icons.my_location, color: Colors.blue),
-                  SizedBox(width: 8),
-                  Text('Use my current location', style: TextStyle(color: Colors.blue)),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Search results
-            Obx(() {
-              if (controller.searchResults.isNotEmpty) {
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: controller.searchResults.length,
-                    itemBuilder: (context, index) {
-                      final location = controller.searchResults[index];
-                      return ListTile(
-                        leading: const Icon(Icons.location_on),
-                        title: Text(location.name),
-                        subtitle: Text(location.address),
-                        onTap: () => controller.selectLocation(controller.searchResults[index]),
-                      );
-                    },
-                  ),
-                );
+        actions: [
+          // Google Maps button in the top-right corner
+          IconButton(
+            icon: const Icon(Icons.map),
+            onPressed: () {
+              final position = mapsController.currentPosition.value;
+              if (position != null) {
+                openMap(position.latitude, position.longitude);
               }
-              return const SizedBox.shrink();
-            }),
-          ],
-        ),
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Masukkan nama lokasi...',
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.mic),
+                      onPressed: () async {
+                        micController.startListening();
+                        micController.currentText.listen((text) {
+                          searchController.text = text;
+                          if (micController.isListening.isFalse &&
+                              text.isNotEmpty) {
+                            performSearch(text);
+                          }
+                        });
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.search),
+                      onPressed: () => performSearch(searchController.text),
+                    ),
+                  ],
+                ),
+                border: const OutlineInputBorder(),
+              ),
+              onSubmitted: performSearch,
+              textInputAction: TextInputAction.search,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: useCurrentLocation,
+              child: const Text('Gunakan Lokasi Sekarang'),
+            ),
+          ),
+          Obx(() {
+            if (controller.isLoading.value) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (controller.addresses.isEmpty) {
+              return const Center(
+                child: Text('Tidak ada hasil pencarian.'),
+              );
+            } else {
+              return Expanded(
+                child: ListView.builder(
+                  itemCount: controller.addresses.length,
+                  itemBuilder: (context, index) {
+                    final address = controller.addresses[index];
+                    return ListTile(
+                      title: Text(address.displayName),
+                      subtitle: Text(
+                        '${address.address.city ?? address.address.village ?? 'N/A'}, ${address.address.country}',
+                      ),
+                      onTap: () => onAddressSelected(address.displayName),
+                    );
+                  },
+                ),
+              );
+            }
+          }),
+        ],
       ),
     );
   }
