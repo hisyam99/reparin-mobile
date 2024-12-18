@@ -83,6 +83,7 @@ import '../modules/location_input/views/location_input_view.dart';
 import '../modules/settings/bindings/settings_binding.dart';
 import '../modules/settings/views/settings_view.dart';
 import '../modules/searchresults/views/searchresults_view.dart';
+import '../modules/booking_service/bindings/booking_service_binding.dart';
 
 part 'app_routes.dart';
 
@@ -166,6 +167,7 @@ class AppPages {
     GetPage(
       name: _Paths.SERVICEBOOKING,
       page: () {
+        // Extract arguments passed during navigation
         final args = Get.arguments as Map<String, dynamic>;
         return ServiceBookingView(
           serviceType: args['serviceType'] as String,
@@ -176,9 +178,7 @@ class AppPages {
           address: args['address'] as String,
         );
       },
-      binding: BindingsBuilder(() {
-        Get.lazyPut(() => ServiceBookingController());
-      }),
+      binding: ServiceBookingBinding(), // Use the new binding
     ),
     GetPage(
         name: _Paths.ProfileView,
@@ -334,29 +334,25 @@ class AppPages {
       page: () => const SettingsView(),
       binding: SettingsBinding(),
     ),
-
     GetPage(
       name: _Paths.MAPS,
       page: () => const MapsView(),
       binding: MapsBinding(),
     ),
-
     GetPage(
-      name:  _Paths.SELECTED_LOCATION,
+      name: _Paths.SELECTED_LOCATION,
       page: () => SelectedLocationView(),
       binding: SelectedLocationBinding(),
     ),
-
     GetPage(
-    name: '/search-results',
-    page: () {
-      final arguments = Get.arguments;
-      return SearchResultsView(
-        query: arguments['query'],
-        services: arguments['services'],
-      );
-    },
-  ),
-  
+      name: '/search-results',
+      page: () {
+        final arguments = Get.arguments;
+        return SearchResultsView(
+          query: arguments['query'],
+          services: arguments['services'],
+        );
+      },
+    ),
   ];
 }

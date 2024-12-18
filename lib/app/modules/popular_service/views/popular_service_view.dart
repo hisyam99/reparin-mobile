@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:reparin_mobile/app/modules/popular_service/controllers/popular_service__controller.dart';
-import '../../booking_service/controllers/booking_service_controller.dart';
-
-import '../../booking_service/views/booking_service_view.dart';
+import 'package:reparin_mobile/app/routes/app_pages.dart';
+import '../controllers/popular_service__controller.dart';
 
 class PopularServiceView extends GetView<PopularServiceController> {
   const PopularServiceView({super.key});
@@ -38,59 +36,59 @@ class PopularServiceView extends GetView<PopularServiceController> {
               ),
               elevation: 2.0,
               child: ListTile(
-                  contentPadding: const EdgeInsets.all(16.0),
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Image.asset(
-                      item['image'],
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.cover,
+                contentPadding: const EdgeInsets.all(16.0),
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.asset(
+                    item['image'],
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                title: Text(
+                  item['title'],
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 4),
+                    Text(
+                      item['price'],
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.green,
+                      ),
                     ),
-                  ),
-                  title: Text(
-                    item['title'],
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    const SizedBox(height: 4),
+                    Text(
+                      item['address'],
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 4),
-                      Text(
-                        item['price'],
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.green,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        item['address'], // Display the address
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    Get.to(
-                      () => ServiceBookingView(
-                        serviceType: item['title'],
-                        providerName: item['provider'],
-                        price: double.parse(item['price'].replaceAll('\$', '')),
-                        longitude: item['longitude'], // Pass longitude
-                        latitude: item['latitude'], // Pass latitude
-                        address: item['address'], // Pass address
-                      ),
-                      binding: BindingsBuilder(() {
-                        Get.lazyPut(() => ServiceBookingController());
-                      }),
-                    );
-                  }),
+                  ],
+                ),
+                onTap: () {
+                  // Use named route with arguments
+                  Get.toNamed(
+                    Routes.SERVICEBOOKING,
+                    arguments: {
+                      'serviceType': item['title'],
+                      'providerName': item['provider'],
+                      'price': double.parse(item['price'].replaceAll('\$', '')),
+                      'longitude': item['longitude'],
+                      'latitude': item['latitude'],
+                      'address': item['address'],
+                    },
+                  );
+                },
+              ),
             );
           },
         );
