@@ -5,25 +5,32 @@ import '../views/no_connection_view.dart';
 
 class ConnectionController extends GetxController {
   final Connectivity _connectivity = Connectivity();
+
   @override
   void onInit() {
     super.onInit();
     _connectivity.onConnectivityChanged.listen((connectivityResults) {
-// Jika connectivityResults adalah List<ConnectivityResult>, kita ambil hasil pertama
       _updateConnectionStatus(connectivityResults.first);
     });
   }
 
-// Fungsi untuk mengupdate status koneksi
   void _updateConnectionStatus(ConnectivityResult connectivityResult) {
-// kondisi dimana aplikasi mendeteksi bawha tidak ada koneksi sama sekali
-    if (connectivityResult == ConnectivityResult.none) {
+    // Cek apakah saat ini sedang di halaman login
+    bool isLoginPage = Get.currentRoute == '/login';
+
+    if (connectivityResult == ConnectivityResult.none && isLoginPage || Get.currentRoute == '/explore') {
+      // Hanya beralih ke halaman no connection jika sedang di halaman login
       Get.offAll(() => const NoConnectionView());
-    } else {
-// else merupakan kondisi jika aplikasi terhubung dengan koneksi wifi atau mobile data
-      if (Get.currentRoute == '/NoConnectionView') {
-        Get.offAll(() => const LoginView());
-      }
+    } else if (connectivityResult != ConnectivityResult.none &&
+        Get.currentRoute == '/NoConnectionView') {
+      // Kembali ke halaman login jika sudah terhubung kembali
+      Get.offAll(() => const LoginView());
     }
+  }
+
+  // Metode untuk pengecekan koneksi manual
+  Future<bool> checkInternetConnection() async {
+    var connectivityResult = await _connectivity.checkConnectivity();
+    return connectivityResult != ConnectivityResult.none;
   }
 }

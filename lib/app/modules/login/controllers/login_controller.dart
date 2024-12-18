@@ -1,45 +1,33 @@
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:reparin_mobile/app/data/services/authentication/controllers/authentication_controller.dart';
 
 class LoginController extends GetxController {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final AuthenticationController _authController =
+      Get.find<AuthenticationController>();
 
-  Future<bool> validateLogin(String email, String password) async {
+  TextEditingController get emailController => _authController.emailController;
+  TextEditingController get passwordController =>
+      _authController.passwordController;
+
+  Future<void> login() async {
     try {
-      // Sign in with email and password
-      await _auth.signInWithEmailAndPassword(
-        email: email.trim(),
-        password: password,
-      );
-      return true;
-    } on FirebaseAuthException catch (e) {
-      String message;
-      switch (e.code) {
-        case 'user-not-found':
-          message = 'No user found for that email.';
-          break;
-        case 'wrong-password':
-          message = 'Wrong password provided.';
-          break;
-        case 'invalid-email':
-          message = 'The email address is not valid.';
-          break;
-        default:
-          message = 'An error occurred. Please try again.';
-      }
-      Get.snackbar(
-        'Error',
-        message,
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return false;
+      _authController.emailController.text = emailController.text;
+      _authController.passwordController.text = passwordController.text;
+
+      await _authController.login();
     } catch (e) {
       Get.snackbar(
         'Error',
-        'An unexpected error occurred',
+        'Login gagal: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
       );
-      return false;
     }
+  }
+
+  bool validateInputs() {
+    return emailController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty &&
+        GetUtils.isEmail(emailController.text.trim());
   }
 }

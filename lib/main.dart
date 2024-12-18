@@ -12,14 +12,18 @@ import 'app/modules/navbar/controllers/navbar_controller.dart';
 import 'app/routes/app_pages.dart';
 import 'app/data/services/notification_handler.dart';
 import 'package:reparin_mobile/dependency_injection.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await Get.putAsync(() async => await SharedPreferences.getInstance());
   await FirebaseMessagingHandler().initPushNotification();
   await FirebaseMessagingHandler().initLocalNotification();
+  final AuthenticationController _authenticationController =
+      Get.put(AuthenticationController());
   Get.put(BooksuccessController());
   Get.put(SettingsController());
   Get.put(HomeController(), permanent: true);
@@ -30,7 +34,8 @@ Future<void> main() async {
   runApp(
     GetMaterialApp(
       title: "Reparin-Mobile",
-      initialRoute: AppPages.INITIAL,
+      initialRoute:
+          _authenticationController.isLoggedIn.value ? '/home' : '/login',
       getPages: AppPages.routes,
       theme: ThemeData(
         primaryColor: const Color(0xFF0093B7),
