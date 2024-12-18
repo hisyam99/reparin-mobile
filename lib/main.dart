@@ -4,11 +4,14 @@ import 'package:get/get.dart';
 import 'package:reparin_mobile/app/modules/profile/controllers/profile_controller.dart';
 import 'package:reparin_mobile/app/modules/bookingsuccess/controllers/booksuccess_controller.dart';
 import 'package:reparin_mobile/app/modules/settings/controllers/settings_controller.dart';
+import 'package:reparin_mobile/app/modules/home/controllers/home_controller.dart';
+import 'package:reparin_mobile/app/modules/login/controllers/login_controller.dart';
 import 'package:reparin_mobile/firebase_options.dart';
 import 'app/data/services/authentication/controllers/authentication_controller.dart';
 import 'app/modules/navbar/controllers/navbar_controller.dart';
 import 'app/routes/app_pages.dart';
 import 'app/data/services/notification_handler.dart';
+import 'package:reparin_mobile/dependency_injection.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +22,8 @@ Future<void> main() async {
   await FirebaseMessagingHandler().initLocalNotification();
   Get.put(BooksuccessController());
   Get.put(SettingsController());
+  Get.put(HomeController(), permanent: true);
+  Get.put(LoginController(), permanent: true);
   Get.put(AuthenticationController(), permanent: true);
   Get.put(NavbarController(), permanent: true);
   Get.put(ProfileController(), permanent: true);
@@ -75,4 +80,5 @@ Future<void> main() async {
       ),
     ),
   );
+  DependencyInjection.init();
 }
