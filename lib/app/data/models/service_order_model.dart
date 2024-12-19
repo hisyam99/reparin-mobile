@@ -1,3 +1,4 @@
+// service_order_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
@@ -52,12 +53,25 @@ class ServiceOrder {
         'userPhone': userPhone.value,
         'userEmail': userEmail.value,
         'userName': userName.value,
-        'orderDate': orderDate.value,
+        'orderDate': Timestamp.fromDate(
+            orderDate.value), // Convert to Timestamp when saving
         'address': address.value,
       };
 
   factory ServiceOrder.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+    // Handle different date formats
+    DateTime parseDate(dynamic dateData) {
+      if (dateData is Timestamp) {
+        return dateData.toDate();
+      } else if (dateData is String) {
+        return DateTime.parse(dateData);
+      } else {
+        return DateTime.now(); // Fallback to current date
+      }
+    }
+
     return ServiceOrder(
       id: doc.id,
       userId: data['userId'] ?? '',
@@ -69,7 +83,7 @@ class ServiceOrder {
       userPhone: data['userPhone'] ?? '',
       userEmail: data['userEmail'] ?? '',
       userName: data['userName'] ?? '',
-      orderDate: (data['orderDate'] as Timestamp).toDate(),
+      orderDate: parseDate(data['orderDate']),
       address: data['address'] ?? '',
     );
   }

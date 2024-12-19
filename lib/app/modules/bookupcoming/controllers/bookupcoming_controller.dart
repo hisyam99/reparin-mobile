@@ -32,30 +32,41 @@ class BookupcomingController extends GetxController {
           .where('userId', isEqualTo: userId)
           .get();
 
-      final fetchedBookings = querySnapshot.docs
-          .map((doc) => BookingData.fromFirestore(doc))
-          .toList();
+      final fetchedBookings = querySnapshot.docs.map((doc) {
+        // Handle the case where orderDate might be a String or Timestamp
+        final data = doc.data();
+        if (data['orderDate'] is String) {
+          // If it's a String, convert it to DateTime then to Timestamp
+          data['orderDate'] =
+              Timestamp.fromDate(DateTime.parse(data['orderDate']));
+        }
+        return BookingData.fromFirestore(doc);
+      }).toList();
 
       bookings.assignAll(fetchedBookings);
     } catch (e) {
       print('Error fetching bookings: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to fetch bookings. Please try again.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red.withOpacity(0.1),
+        colorText: Colors.red,
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
   // Computed lists
-  List<BookingData> get upcomingBookings => bookings
-      .where((booking) => booking.status == 'pending')
-      .toList();
+  List<BookingData> get upcomingBookings =>
+      bookings.where((booking) => booking.status == 'pending').toList();
 
-  List<BookingData> get completedBookings => bookings
-      .where((booking) => booking.status == 'completed')
-      .toList();
+  List<BookingData> get completedBookings =>
+      bookings.where((booking) => booking.status == 'completed').toList();
 
-  List<BookingData> get cancelledBookings => bookings
-      .where((booking) => booking.status == 'cancelled')
-      .toList();
+  List<BookingData> get cancelledBookings =>
+      bookings.where((booking) => booking.status == 'cancelled').toList();
 
   List<BookingData> get currentBookings {
     switch (currentTab.value) {
@@ -97,7 +108,8 @@ class BookupcomingController extends GetxController {
                         title: Text(reason),
                         value: reason,
                         groupValue: selectedReason.value,
-                        onChanged: (value) => selectedReason.value = value ?? '',
+                        onChanged: (value) =>
+                            selectedReason.value = value ?? '',
                       )),
                 ],
               )),
@@ -111,14 +123,14 @@ class BookupcomingController extends GetxController {
                 onPressed: selectedReason.value.isEmpty
                     ? null
                     : () async {
-                        Get.back(); // Close dialog first
+                        Get.back();
                         await cancelBooking(bookingId, selectedReason.value);
                       },
                 child: const Text('Yes'),
               )),
         ],
       ),
-      barrierDismissible: false, // Prevent closing by tapping outside
+      barrierDismissible: false,
     );
   }
 
@@ -136,7 +148,7 @@ class BookupcomingController extends GetxController {
           ),
           TextButton(
             onPressed: () async {
-              Get.back(); // Close dialog first
+              Get.back();
               await deleteBooking(bookingId);
             },
             child: const Text(
@@ -146,7 +158,7 @@ class BookupcomingController extends GetxController {
           ),
         ],
       ),
-      barrierDismissible: false, // Prevent closing by tapping outside
+      barrierDismissible: false,
     );
   }
 
@@ -167,7 +179,6 @@ class BookupcomingController extends GetxController {
         colorText: Colors.green,
       );
 
-      // Refresh the bookings
       await fetchBookings();
     } catch (e) {
       Get.snackbar(
@@ -195,7 +206,6 @@ class BookupcomingController extends GetxController {
         colorText: Colors.green,
       );
 
-      // Refresh the bookings
       await fetchBookings();
     } catch (e) {
       Get.snackbar(
