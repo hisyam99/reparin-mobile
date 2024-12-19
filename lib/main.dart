@@ -23,7 +23,7 @@ Future<void> main() async {
   await FirebaseMessagingHandler().initPushNotification();
   await FirebaseMessagingHandler().initLocalNotification();
   final AuthenticationController _authenticationController =
-      Get.put(AuthenticationController());
+  Get.put(AuthenticationController());
   Get.put(BooksuccessController());
   Get.put(SettingsController());
   Get.put(HomeController(), permanent: true);

@@ -12,6 +12,7 @@ import '../../../data/services/notification_handler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../data/services/location_controller.dart';
+import '../../../data/services/localstorageservice.dart';
 
 class ServiceBookingController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -19,6 +20,7 @@ class ServiceBookingController extends GetxController {
   final FirebaseMessagingHandler _notificationHandler = FirebaseMessagingHandler();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   final ImagePicker _picker = ImagePicker();
+  final LocalStorageService _localStorage = LocalStorageService();
 
   final Rx<Profile> userProfile = Profile.empty().obs;
   final RxBool isLoading = false.obs;
@@ -33,11 +35,30 @@ class ServiceBookingController extends GetxController {
   Rx<VideoPlayerController?> videoPlayerController = Rx<VideoPlayerController?>(null);
   RxBool isVideo = false.obs;
   
+  final RxBool isSyncing = false.obs;
+  final RxInt pendingOrdersCount = 0.obs;
+
   @override
   void onInit() {
     super.onInit();
     loadUserProfile();
     initNotifications();
+    _updatePendingOrdersCount();
+  }
+
+  Future<void> _saveOrderLocally(Map<String, dynamic> orderData) async {
+    await _localStorage.savePendingOrder(orderData);
+    _updatePendingOrdersCount();
+    Get.snackbar(
+      'Offline Mode',
+      'Order saved locally. Will sync when internet connection is restored.',
+      snackPosition: SnackPosition.TOP,
+      duration: const Duration(seconds: 5),
+    );
+  }
+
+  void _updatePendingOrdersCount() {
+    pendingOrdersCount.value = _localStorage.getPendingOrders().length;
   }
 
   Future<void> initNotifications() async {
@@ -82,6 +103,62 @@ class ServiceBookingController extends GetxController {
       'Your service has been booked successfully. We will contact you soon.',
       platformChannelSpecifics,
     );
+  }
+
+  Future<bool> createServiceOrder({
+    required String serviceType,
+    required String providerName,
+    required double price,
+  }) async {
+    try {
+      isLoading.value = true;
+      
+      final userId = _auth.currentUser?.uid;
+      if (userId == null) {
+        Get.snackbar('Error', 'Please login first');
+        return false;
+      }
+
+      final orderData = {
+        'userId': userId,
+        'serviceType': serviceType,
+        'providerName': providerName,
+        'price': price,
+        'description': descriptionController.text,
+        'userPhone': userProfile.value.phone.value,
+        'userEmail': userProfile.value.email.value,
+        'userName': userProfile.value.name.value,
+        'orderDate': DateTime.now().toIso8601String(),
+        'address': addressController.text,
+        'status': 'pending',
+      };
+
+      try {
+        // Try to send to Firebase
+        await _firestore.collection('service_orders').add(orderData);
+        await showBookingSuccessNotification();
+        Get.snackbar(
+          'Success',
+          'Service order created successfully',
+          snackPosition: SnackPosition.TOP,
+        );
+      } catch (e) {
+        // If Firebase fails, store locally
+        await _saveOrderLocally(orderData);
+        return true;
+      }
+      
+      return true;
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to create service order: $e',
+        snackPosition: SnackPosition.TOP,
+      );
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future<void> pickImage(ImageSource source) async {
@@ -189,56 +266,57 @@ class ServiceBookingController extends GetxController {
     );
   }
 
-  Future<bool> createServiceOrder({
-    required String serviceType,
-    required String providerName,
-    required double price,
-    
-  }) async {
+  
+  Future<void> syncPendingOrders() async {
+    if (isSyncing.value) return;
+
     try {
-      isLoading.value = true;
+      isSyncing.value = true;
+      List<Map<String, dynamic>> pendingOrders = _localStorage.getPendingOrders();
       
-      final userId = _auth.currentUser?.uid;
-      if (userId == null) {
-        Get.snackbar('Error', 'Please login first');
-        return false;
+      if (pendingOrders.isEmpty) return;
+
+      int successCount = 0;
+      int failureCount = 0;
+
+      for (int i = 0; i < pendingOrders.length; i++) {
+        try {
+          Map<String, dynamic> orderData = pendingOrders[i];
+          orderData['orderDate'] = DateTime.parse(orderData['orderDate']);
+          
+          await _firestore.collection('service_orders').add(orderData);
+          await _localStorage.removePendingOrder(i);
+          successCount++;
+          
+          await showBookingSuccessNotification();
+        } catch (e) {
+          print('Error syncing order $i: $e');
+          failureCount++;
+        }
       }
 
-      final serviceOrder = ServiceOrder(
-        userId: userId,
-        serviceType: serviceType,
-        providerName: providerName,
-        price: price,
-        description: descriptionController.text,
-        userPhone: userProfile.value.phone.value,
-        userEmail: userProfile.value.email.value,
-        userName: userProfile.value.name.value,
-        orderDate: DateTime.now(),
-        address: addressController.text,
-      );
-
-      await _firestore.collection('service_orders').add(serviceOrder.toJson());
-      await showBookingSuccessNotification();
+      _updatePendingOrdersCount();
       
-      Get.snackbar(
-        'Success',
-        'Service order created successfully',
-        snackPosition: SnackPosition.TOP,
-      );
-      
-      return true;
+      if (successCount > 0) {
+        Get.snackbar(
+          'Sync Complete',
+          'Successfully synced $successCount orders${failureCount > 0 ? '. Failed to sync $failureCount orders' : ''}',
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 5),
+        );
+      }
     } catch (e) {
+      print('Error in syncPendingOrders: $e');
       Get.snackbar(
-        'Error',
-        'Failed to create service order: $e',
+        'Sync Error',
+        'Failed to sync offline orders',
         snackPosition: SnackPosition.TOP,
       );
-      return false;
     } finally {
-      isLoading.value = false;
+      isSyncing.value = false;
     }
   }
-
+  
   @override
   void onClose() {
     descriptionController.dispose();
@@ -247,75 +325,64 @@ class ServiceBookingController extends GetxController {
     super.onClose();
   }
 
+  Future<void> useCurrentLocation() async {
+    try {
+      isLoading.value = true;
 
+      final mapsController = Get.find<MapsController>();
+      await mapsController.getCurrentLocation();
 
+      if (mapsController.currentPosition.value != null) {
+        Position position = mapsController.currentPosition.value!;
 
-Future<void> useCurrentLocation() async {
-  try {
-    isLoading.value = true;
+        try {
+          final url = 'https://nominatim.openstreetmap.org/reverse?lat=${position.latitude}&lon=${position.longitude}&format=json&addressdetails=1';
+          final response = await GetConnect().get(url);
 
-    // Mengambil lokasi dari MapsController
-    final mapsController = Get.find<MapsController>(); // Mengakses MapsController yang sudah diinisialisasi
-    await mapsController.getCurrentLocation();
-
-    // Pastikan lokasi ada
-    if (mapsController.currentPosition.value != null) {
-      Position position = mapsController.currentPosition.value!;
-
-      // Membuat URL API untuk mendapatkan alamat berdasarkan lat, lon
-      final url =
-          'https://nominatim.openstreetmap.org/reverse?lat=${position.latitude}&lon=${position.longitude}&format=json&addressdetails=1';
-      print('URL: $url');
-
-      final response = await GetConnect().get(url);
-
-      if (response.statusCode == 200) {
-        final data = response.body;
-        if (data != null && data['display_name'] != null) {
-          final selectedAddress = data['display_name'];
-
-          // Update text field dengan alamat yang ditemukan
-          addressController.text = selectedAddress;
-
-          // Save the address to Firestore
-          await updateAddress(selectedAddress);
-        } else {
-          Get.snackbar('Error', 'No address found for this location');
+          if (response.statusCode == 200 && response.body != null) {
+            final data = response.body;
+            if (data['display_name'] != null) {
+              final selectedAddress = data['display_name'];
+              addressController.text = selectedAddress;
+              await updateAddress(selectedAddress);
+            } else {
+              Get.snackbar('Error', 'No address found for this location');
+            }
+          } else {
+            // Handle offline case for address lookup
+            addressController.text = 'Lat: ${position.latitude}, Long: ${position.longitude}';
+          }
+        } catch (e) {
+          // If address lookup fails, use coordinates
+          addressController.text = 'Lat: ${position.latitude}, Long: ${position.longitude}';
+          print('Error fetching address: $e');
         }
       } else {
-        Get.snackbar(
-          'Error',
-          'Failed to fetch location address. Status Code: ${response.statusCode}',
-        );
+        Get.snackbar('Error', 'Failed to get current location');
       }
-    } else {
-      Get.snackbar('Error', 'Failed to get current location');
+    } catch (e) {
+      print('Error using current location: $e');
+      Get.snackbar('Error', 'Failed to fetch location');
+    } finally {
+      isLoading.value = false;
     }
-  } catch (e) {
-    print('Error using current location: $e');
-    Get.snackbar('Error', 'Failed to fetch location');
-  } finally {
-    isLoading.value = false;
   }
-}
 
-Future<void> updateAddress(String address) async {
-  try {
-    final userId = _auth.currentUser?.uid;
-    if (userId != null) {
-      // Mengupdate data alamat di Firestore
-      await _firestore.collection('users').doc(userId).set({
-        'address': address, // Save the address passed as a parameter
-      }, SetOptions(merge: true)); // Menggunakan merge agar data lain tidak terhapus
+  Future<void> updateAddress(String address) async {
+    try {
+      final userId = _auth.currentUser?.uid;
+      if (userId != null) {
+        await _firestore.collection('users').doc(userId).set({
+          'address': address,
+        }, SetOptions(merge: true));
 
-      Get.snackbar('Success', 'Address updated successfully');
-    } else {
-      Get.snackbar('Error', 'User not logged in');
+        Get.snackbar('Success', 'Address updated successfully');
+      } else {
+        Get.snackbar('Error', 'User not logged in');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to update address: $e');
     }
-  } catch (e) {
-    Get.snackbar('Error', 'Failed to update address: $e');
   }
-}
-
-
+  
 }

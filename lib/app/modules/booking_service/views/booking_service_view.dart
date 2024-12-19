@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:reparin_mobile/app/modules/booking_service/views/AddressSearchView.dart';
+import 'package:reparin_mobile/app/modules/connection/controllers/connection_controller.dart';
 import 'package:video_player/video_player.dart';
 import '../controllers/booking_service_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -40,8 +41,6 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
 
   @override
   Widget build(BuildContext context) {
-    
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -56,15 +55,40 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
         ),
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        // if (controller.isLoading.value) {
+        //   return const Center(child: CircularProgressIndicator());
+        // }
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        // Add offline mode indicator
+        return Stack(
+          children: [
+            Column(
+              children: [
+                // Show offline mode banner
+                if (!Get.find<ConnectionController>().isConnected.value)
+                  Container(
+                    color: Colors.orange[100],
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      children: const [
+                        Icon(Icons.cloud_off, color: Colors.orange),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Offline Mode - Your booking will be saved locally and synced when online',
+                            style: TextStyle(color: Colors.orange),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                _buildPendingOrdersIndicator(),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
               // Media Preview Section
               _buildMediaPreview(),
               const SizedBox(height: 16),
@@ -240,8 +264,13 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
                   ),
                 ),
               ),
-            ],
-          ),
+                  ],
+                ),
+              ),
+            ),
+              ],
+            ),
+          ],
         );
       }),
     );
@@ -431,4 +460,32 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
       ),
     );
   }
+}
+
+Widget _buildPendingOrdersIndicator() {
+  return Obx(() {
+    final controller = Get.find<ServiceBookingController>();
+    if (controller.pendingOrdersCount.value > 0) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Card(
+          color: Colors.orange[100],
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                const Icon(Icons.pending_actions, color: Colors.orange),
+                const SizedBox(width: 8),
+                Text(
+                  '${controller.pendingOrdersCount.value} pending orders will sync when online',
+                  style: const TextStyle(color: Colors.orange),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    return const SizedBox.shrink();
+  });
 }
