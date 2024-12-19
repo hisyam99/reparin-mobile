@@ -30,7 +30,9 @@ class ConnectionController extends GetxController {
     isConnected.value = connectivityResult != ConnectivityResult.none;
 
     if (!isConnected.value) {
-      if (Get.currentRoute != '/NoConnectionView') {
+      if (Get.currentRoute != '/NoConnectionView' &&
+          !(Get.currentRoute == '/home' ||
+              Get.currentRoute == '/service-booking')) {
         _lastRoute = Get.currentRoute;
         _lastArguments = Get.arguments;
         Get.offAll(() => const NoConnectionView());
