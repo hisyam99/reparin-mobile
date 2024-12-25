@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../models/profile_model.dart';
 
 class AuthenticationController extends GetxController {
@@ -11,23 +10,21 @@ class AuthenticationController extends GetxController {
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
   final passwordController = TextEditingController();
-
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final SharedPreferences _prefs = Get.find<SharedPreferences>();
-
   final obscurePassword = true.obs;
   final Rx<User?> user = Rx<User?>(null);
   final RxBool isLoggedIn = false.obs;
+  final RxString userRole = 'user'.obs; // Menambahkan RxString untuk role
 
   @override
   void onInit() {
     super.onInit();
     // Listen to auth state changes
-    user.bindStream(  _auth.authStateChanges());
+    user.bindStream(_auth.authStateChanges());
     ever(user, _initialScreen);
     checkLoginStatus(); // Periksa status login saat controller diinisialisasi
-
     // Cek token tersimpan saat inisialisasi
     final savedToken = _prefs.getString('user_token');
     if (savedToken != null) {
@@ -38,7 +35,23 @@ class AuthenticationController extends GetxController {
   // Periksa status login menggunakan Shared Preferences dan Firebase Auth
   Future<void> checkLoginStatus() async {
     final currentUser = _auth.currentUser;
-    isLoggedIn.value = currentUser != null && _prefs.containsKey('user_token');
+    if (currentUser != null) {
+      isLoggedIn.value = true;
+      await fetchUserRole(currentUser.uid);
+    } else {
+      isLoggedIn.value = false;
+    }
+  }
+
+  // Fetch user role from Firestore
+  Future<void> fetchUserRole(String userId) async {
+    final doc = await _firestore.collection('users').doc(userId).get();
+    if (doc.exists) {
+      final profile = Profile.fromFirestore(doc);
+      userRole.value = profile.role.value;
+    } else {
+      userRole.value = 'user'; // Default role jika tidak ditemukan di Firestore
+    }
   }
 
   // Handle initial screen routing based on auth state
@@ -62,7 +75,6 @@ class AuthenticationController extends GetxController {
         const Center(child: CircularProgressIndicator()),
         barrierDismissible: false,
       );
-
       // Validasi input sebelum login
       if (!_validateLoginInputs()) {
         Get.back();
@@ -75,21 +87,18 @@ class AuthenticationController extends GetxController {
         );
         return;
       }
-
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text,
       );
-
       // Simpan token dengan informasi lebih lengkap
       String? token = await userCredential.user!.getIdToken();
       await _prefs.setString('user_token', token ?? '');
       await _prefs.setString('user_email', userCredential.user!.email ?? '');
       isLoggedIn.value = true;
-
+      await fetchUserRole(userCredential.user!.uid); // Fetch role setelah login
       Get.back(); // Tutup dialog loading
       _clearControllers();
-
       Get.snackbar(
         'Success',
         'Login berhasil',
@@ -97,7 +106,6 @@ class AuthenticationController extends GetxController {
         backgroundColor: Colors.green.withOpacity(0.1),
         colorText: Colors.green,
       );
-
       Get.offAllNamed('/home');
     } on FirebaseAuthException catch (e) {
       Get.back();
@@ -113,7 +121,6 @@ class AuthenticationController extends GetxController {
           errorMessage = 'Format email tidak valid';
           break;
       }
-
       Get.snackbar(
         'Error',
         errorMessage,
@@ -139,7 +146,6 @@ class AuthenticationController extends GetxController {
         const Center(child: CircularProgressIndicator()),
         barrierDismissible: false,
       );
-
       if (!_validateInputs()) {
         Get.back();
         Get.snackbar(
@@ -151,26 +157,23 @@ class AuthenticationController extends GetxController {
         );
         return;
       }
-
       // Create user in Firebase Auth
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text,
       );
-
-      // Create user profile in Firestore
-      await createUserProfile(userCredential.user!);
-
+      // Create user profile in Firestore with role 'user'
+      await createUserProfile(userCredential.user!, 'user');
       // Simpan token pengguna di Shared Preferences
       String? token = await userCredential.user!.getIdToken();
       await _prefs.setString('user_token', token ?? '');
       await _prefs.setString('user_email', userCredential.user!.email ?? '');
       isLoggedIn.value = true;
-
+      await fetchUserRole(
+          userCredential.user!.uid); // Fetch role setelah sign up
       Get.back(); // Close loading dialog
       _clearControllers();
-
       Get.snackbar(
         'Success',
         'Akun berhasil dibuat',
@@ -178,7 +181,6 @@ class AuthenticationController extends GetxController {
         backgroundColor: Colors.green.withOpacity(0.1),
         colorText: Colors.green,
       );
-
       Get.offAllNamed('/home');
     } catch (e) {
       Get.back();
@@ -212,22 +214,18 @@ class AuthenticationController extends GetxController {
         passwordController.text.isEmpty) {
       return false;
     }
-
     // Basic email validation
     if (!GetUtils.isEmail(emailController.text.trim())) {
       return false;
     }
-
     // Basic phone number validation
     if (!GetUtils.isPhoneNumber(phoneController.text.trim())) {
       return false;
     }
-
     // Basic password strength validation
     if (passwordController.text.length < 6) {
       return false;
     }
-
     return true;
   }
 
@@ -240,18 +238,15 @@ class AuthenticationController extends GetxController {
         ),
         barrierDismissible: false,
       );
-
       // Hapus token dari Shared Preferences
       await _prefs.remove('user_token');
       await _prefs.remove('user_email');
       isLoggedIn.value = false;
-
+      userRole.value = 'user'; // Reset role to 'user' on logout
       // Sign out from Firebase
       await _auth.signOut();
-
       // Close loading dialog
       Get.back();
-
       // Show success message
       Get.snackbar(
         'Success',
@@ -260,13 +255,11 @@ class AuthenticationController extends GetxController {
         backgroundColor: Colors.green.withOpacity(0.1),
         colorText: Colors.green,
       );
-
       // Navigate to sign in view
       Get.offAllNamed('/login');
     } catch (e) {
       // Close loading dialog
       Get.back();
-
       Get.snackbar(
         'Error',
         'Terjadi kesalahan saat logout',
@@ -277,15 +270,15 @@ class AuthenticationController extends GetxController {
     }
   }
 
-  Future<void> createUserProfile(User user) async {
+  Future<void> createUserProfile(User user, String role) async {
     try {
       final profile = Profile(
         id: user.uid,
         name: nameController.text.trim(),
         phone: phoneController.text.trim(),
         email: emailController.text.trim(),
+        role: role, // Set role to 'user' during registration
       );
-
       await _firestore.collection('users').doc(user.uid).set(profile.toJson());
     } catch (e) {
       throw 'Gagal membuat profil pengguna: $e';

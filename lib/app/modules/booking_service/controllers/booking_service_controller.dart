@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:reparin_mobile/app/modules/maps/controllers/maps_controller.dart';
 import 'package:video_player/video_player.dart';
-import '../../../data/models/service_order_model.dart';
 import '../../../data/models/profile_model.dart';
 import '../../../data/services/notification_handler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';

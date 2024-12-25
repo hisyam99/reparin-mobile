@@ -3,8 +3,8 @@ import 'package:reparin_mobile/app/modules/maps/bindings/maps_binding.dart';
 import 'package:reparin_mobile/app/modules/maps/views/maps_view.dart';
 import 'package:reparin_mobile/app/modules/selected_location/bindings/selected_location_binding.dart';
 import 'package:reparin_mobile/app/modules/selected_location/views/selected_location_view.dart';
+import 'package:reparin_mobile/app/modules/service/views/service_view.dart';
 import '../data/services/authentication/bindings/authentication_binding.dart';
-import '../modules/booking_service/controllers/booking_service_controller.dart';
 import '../modules/booking_service/views/booking_service_view.dart';
 import '../modules/category/bindings/category_binding.dart';
 import '../modules/category/views/category_view.dart';
@@ -64,8 +64,6 @@ import '../modules/started/bindings/started_binding.dart';
 import '../modules/started/views/started_view.dart';
 import '../modules/explore/bindings/explore_binding.dart';
 import '../modules/explore/views/explore_view.dart';
-import '../modules/Service/bindings/service_provider_binding.dart';
-import '../modules/Service/Views/service_provider_view.dart';
 import '../modules/review/bindings/review_binding.dart';
 import '../modules/review/view/review_view.dart';
 import '../modules/gallary/bindings/gallery_binding.dart';
@@ -84,6 +82,11 @@ import '../modules/settings/bindings/settings_binding.dart';
 import '../modules/settings/views/settings_view.dart';
 import '../modules/searchresults/views/searchresults_view.dart';
 import '../modules/booking_service/bindings/booking_service_binding.dart';
+import '../modules/admin_dashboard/bindings/admin_dashboard_binding.dart';
+import '../modules/admin_dashboard/views/admin_dashboard_view.dart';
+import '../modules/admin_dashboard/bindings/add_service_binding.dart';
+import '../modules/admin_dashboard/views/add_service_view.dart';
+import '../modules/service/bindings/service_binding.dart';
 
 part 'app_routes.dart';
 
@@ -127,6 +130,8 @@ class AppPages {
   static const CONTACT_US = Routes.CONTACT_US;
   static const SETTINGS = Routes.SETTINGS;
   static const SELECTED_LOCATION = Routes.SELECTED_LOCATION;
+  static const ADMIN_DASHBOARD = Routes.ADMIN_DASHBOARD;
+  static const ADMIN_DASHBOARD_ADD_SERVICE = Routes.ADMIN_DASHBOARD_ADD_SERVICE;
 
   static final routes = [
     GetPage(name: _Paths.LOGIN, page: () => const LoginView(), bindings: [
@@ -170,12 +175,12 @@ class AppPages {
         // Extract arguments passed during navigation
         final args = Get.arguments as Map<String, dynamic>;
         return ServiceBookingView(
-          serviceType: args['serviceType'] as String,
-          providerName: args['providerName'] as String,
-          price: args['price'] as double,
-          longitude: args['longitude'] as double,
-          latitude: args['latitude'] as double,
-          address: args['address'] as String,
+          serviceType: args['serviceType'] as String? ?? '',
+          providerName: args['providerName'] as String? ?? '',
+          price: (args['price'] as num?)?.toDouble() ?? 0.0,
+          longitude: (args['longitude'] as num?)?.toDouble() ?? 0.0,
+          latitude: (args['latitude'] as num?)?.toDouble() ?? 0.0,
+          address: args['address'] as String? ?? '',
         );
       },
       binding: ServiceBookingBinding(), // Use the new binding
@@ -301,8 +306,8 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.SERVICE,
-      page: () => const ServiceProviderView(),
-      binding: ServiceProviderBinding(),
+      page: () => const ServiceView(),
+      binding: ServiceBinding(),
     ),
     GetPage(
       name: _Paths.REVIEW,
@@ -343,6 +348,16 @@ class AppPages {
       name: _Paths.SELECTED_LOCATION,
       page: () => SelectedLocationView(),
       binding: SelectedLocationBinding(),
+    ),
+    GetPage(
+      name: Routes.ADMIN_DASHBOARD,
+      page: () => const AdminDashboardView(),
+      binding: AdminDashboardBinding(),
+    ),
+    GetPage(
+      name: Routes.ADMIN_DASHBOARD_ADD_SERVICE,
+      page: () => const AddServiceView(),
+      binding: AddServiceBinding(),
     ),
     GetPage(
       name: '/search-results',

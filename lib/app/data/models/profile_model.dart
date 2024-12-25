@@ -7,6 +7,7 @@ class Profile {
   final RxString phone;
   final RxString email;
   final RxString imagePath;
+  final RxString role; // Menambahkan field role
 
   Profile({
     String? id,
@@ -14,11 +15,13 @@ class Profile {
     required String phone,
     required String email,
     String? imagePath,
+    String? role,
   })  : id = RxString(id ?? ''),
         name = RxString(name.trim()),
         phone = RxString(phone.trim()),
         email = RxString(email.trim()),
-        imagePath = RxString(imagePath ?? '');
+        imagePath = RxString(imagePath ?? ''),
+        role = RxString(role ?? 'user'); // Default role adalah 'user'
 
   Map<String, dynamic> toJson() => {
         'id': id.value,
@@ -26,6 +29,7 @@ class Profile {
         'phone': phone.value,
         'email': email.value,
         'imagePath': imagePath.value,
+        'role': role.value,
       };
 
   factory Profile.fromFirestore(DocumentSnapshot doc) {
@@ -36,6 +40,7 @@ class Profile {
       phone: data['phone']?.toString() ?? '',
       email: data['email']?.toString() ?? '',
       imagePath: data['imagePath']?.toString() ?? '',
+      role: data['role']?.toString() ?? 'user',
     );
   }
 

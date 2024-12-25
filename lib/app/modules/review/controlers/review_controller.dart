@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../Service/controllers/service_provider_controller.dart';
+import '../../old_Service/controllers/service_provider_controller.dart';
 
 class reviewController extends GetxController with GetSingleTickerProviderStateMixin {
   late TabController tabController;

@@ -43,6 +43,8 @@ abstract class Routes {
   static const SETTINGS = _Paths.SETTINGS;
   static const MAPS = _Paths.MAPS;
   static const SELECTED_LOCATION = _Paths.SELECTED_LOCATION; 
+  static const ADMIN_DASHBOARD = _Paths.ADMIN_DASHBOARD;
+  static const ADMIN_DASHBOARD_ADD_SERVICE = _Paths.ADMIN_DASHBOARD_ADD_SERVICE;
 }
 
 abstract class _Paths {
@@ -88,4 +90,6 @@ abstract class _Paths {
   static const SETTINGS = '/settings';
   static const MAPS = '/maps';
   static const SELECTED_LOCATION = '/selected-location';
+  static const ADMIN_DASHBOARD = '/admin-dashboard';
+  static const ADMIN_DASHBOARD_ADD_SERVICE = '/admin-dashboard/add-service';
 }

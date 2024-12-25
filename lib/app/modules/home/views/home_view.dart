@@ -1,10 +1,12 @@
-// File 1: /lib/app/modules/home/views/home_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../data/models/service_model.dart';
 import '../../webview/controllers/webview_controller.dart';
 import '../../webview/views/webview_reparin.dart';
 import '../controllers/home_controller.dart';
 import 'package:reparin_mobile/app/modules/navbar/views/navbar_view.dart';
+import 'package:reparin_mobile/app/data/services/authentication/controllers/authentication_controller.dart';
+import '../../service/controllers/service_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -12,6 +14,10 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     final TextEditingController searchController = TextEditingController();
+    final AuthenticationController authController =
+        Get.find<AuthenticationController>();
+    final ServiceController serviceController = Get.find<ServiceController>();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -27,7 +33,7 @@ class HomeView extends GetView<HomeController> {
               const Text(
                 'Location',
                 style: TextStyle(
-                  fontSize: 12, // Mengurangi ukuran teks
+                  fontSize: 12,
                   color: Colors.white,
                   fontWeight: FontWeight.normal,
                 ),
@@ -44,7 +50,7 @@ class HomeView extends GetView<HomeController> {
                           child: Text(
                             'Loading...',
                             style: TextStyle(
-                              fontSize: 14, // Mengurangi ukuran teks
+                              fontSize: 14,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -56,7 +62,7 @@ class HomeView extends GetView<HomeController> {
                           child: Text(
                             controller.addressDetails.value,
                             style: const TextStyle(
-                              fontSize: 14, // Mengurangi ukuran teks
+                              fontSize: 14,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -88,6 +94,33 @@ class HomeView extends GetView<HomeController> {
               Get.toNamed('/notification');
             },
           ),
+          // Menampilkan menu khusus admin jika role adalah 'admin'
+          Obx(() {
+            if (authController.userRole.value == 'admin') {
+              return PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'add_service') {
+                    Get.toNamed('/admin-dashboard/add-service');
+                  } else if (value == 'dashboard') {
+                    Get.toNamed('/admin-dashboard');
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  const PopupMenuItem<String>(
+                    value: 'dashboard',
+                    child: Text('Admin Dashboard'),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'add_service',
+                    child: Text('Add Service'),
+                  ),
+                ],
+                icon: const Icon(Icons.admin_panel_settings),
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          }),
         ],
       ),
       body: SafeArea(
@@ -139,21 +172,29 @@ class HomeView extends GetView<HomeController> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildSectionHeader('Categories', () {
-                      Get.toNamed('/category');
-                    }),
-                    _buildCategories(),
-                    const SizedBox(height: 24),
-                    _buildSectionHeader('Popular Services', () {
-                      Get.toNamed('/popular-service');
-                    }),
-                    _buildPopularServices(),
-                    const SizedBox(height: 24),
-                  ],
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await serviceController.fetchServices();
+                  controller.filteredServices.value =
+                      serviceController.services;
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionHeader('Categories', () {
+                        Get.toNamed('/category');
+                      }),
+                      _buildCategories(),
+                      const SizedBox(height: 24),
+                      _buildSectionHeader('Popular Services', () {
+                        Get.toNamed('/service');
+                      }),
+                      _buildPopularServices(),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -238,6 +279,11 @@ class HomeView extends GetView<HomeController> {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Obx(() {
+        if (controller.filteredServices.isEmpty) {
+          return const Center(
+            child: Text('No services available'),
+          );
+        }
         return GridView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -247,9 +293,9 @@ class HomeView extends GetView<HomeController> {
             crossAxisSpacing: 16,
             childAspectRatio: 0.8,
           ),
-          itemCount: controller.services.length,
+          itemCount: controller.filteredServices.length,
           itemBuilder: (context, index) {
-            var service = controller.services[index];
+            var service = controller.filteredServices[index];
             return _buildServiceCard(service);
           },
         );
@@ -257,10 +303,10 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildServiceCard(Map<String, dynamic> service) {
+  Widget _buildServiceCard(Service service) {
     return GestureDetector(
       onTap: () {
-        Get.toNamed('/popular-service');
+        Get.toNamed('/popular-service', arguments: service);
       },
       child: Container(
         decoration: BoxDecoration(
@@ -274,16 +320,28 @@ class HomeView extends GetView<HomeController> {
             Expanded(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.asset(
-                  service['image'],
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: service.image.isNotEmpty
+                    ? Image.network(
+                        service.image,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Image.asset(
+                          'assets/default_repair.png',
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Image.asset(
+                        'assets/default_repair.png',
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              service['title'],
+              service.title,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -293,7 +351,7 @@ class HomeView extends GetView<HomeController> {
             ),
             const SizedBox(height: 4),
             Text(
-              service['price'],
+              '\$${service.price.toStringAsFixed(2)}',
               style: const TextStyle(
                 fontSize: 14,
                 color: Colors.green,
@@ -301,7 +359,7 @@ class HomeView extends GetView<HomeController> {
             ),
             const SizedBox(height: 4),
             Text(
-              service['provider'],
+              service.provider,
               style: const TextStyle(
                 fontSize: 12,
                 color: Colors.grey,
@@ -311,7 +369,7 @@ class HomeView extends GetView<HomeController> {
             ),
             const SizedBox(height: 4),
             Text(
-              service['address'],
+              service.address,
               style: const TextStyle(
                 fontSize: 12,
                 color: Colors.blueGrey,

@@ -2,12 +2,26 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import '../../../data/models/address.dart'; // Pastikan path benar
+import '../../../data/models/address.dart';
+import '../../../data/models/service_model.dart';
+import '../../service/controllers/service_controller.dart';
 
 class HomeController extends GetxController {
-    Rx<Position?> currentPosition = Rx<Position?>(null);
+  final ServiceController _serviceController = Get.put(ServiceController());
+
+  Rx<Position?> currentPosition = Rx<Position?>(null);
   final RxString addressDetails = "Surabaya".obs;
   final RxBool loading = false.obs;
+
+  // Filtered services list
+  final RxList<Service> filteredServices = <Service>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Initially, filtered services is the same as all services
+    filteredServices.value = _serviceController.services;
+  }
 
   Future<void> getCurrentLocation() async {
     loading.value = true;
@@ -17,7 +31,6 @@ class HomeController extends GetxController {
         await Geolocator.openLocationSettings();
         throw Exception('Location service not enabled');
       }
-
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
@@ -25,15 +38,12 @@ class HomeController extends GetxController {
           throw Exception('Location permission denied');
         }
       }
-
       if (permission == LocationPermission.deniedForever) {
         throw Exception('Location permission denied forever');
       }
-
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best,
       );
-
       currentPosition.value = position;
       await fetchAddress(position.latitude, position.longitude);
       loading.value = false;
@@ -62,65 +72,7 @@ class HomeController extends GetxController {
     }
   }
 
-
-  final count = 0.obs;
-
-  get tabController => null;
-
-  void increment() => count.value++;
-
-  buildScreens() {}
-
-  var services = <Map<String, dynamic>>[
-    {
-      'title': 'Mobile Device Repair',
-      'price': '\$15.00',
-      'provider': 'Jenny Wilson',
-      'image': 'assets/device_repair1.png',
-      'address': 'Jl. Merdeka No.10, Jakarta',
-    },
-    {
-      'title': 'Laptop Repair',
-      'price': '\$15.00',
-      'provider': 'Bob',
-      'image': 'assets/laptop_repair1.png',
-      'address': 'Jl. Braga No.5, Bandung',
-    },
-    {
-      'title': 'Smartphone Repair',
-      'price': '\$15.00',
-      'provider': 'Bob',
-      'image': 'assets/smartphone_repair1.png',
-      'address': 'Jl. Malioboro No.20, Yogyakarta',
-    },
-    {
-      'title': 'Camera Repair',
-      'price': '\$15.00',
-      'provider': 'Alan',
-      'image': 'assets/camera_repair1.png',
-      'address': 'Jl. Sunset Road No.45, Bali',
-    },
-  ].obs;
-
-  // Filtered services list
-  final RxList<Map<String, dynamic>> filteredServices = <Map<String, dynamic>>[].obs;
-
-  @override
-  void onInit() {
-    super.onInit();
-    // Initially, filtered services is the same as all services
-    filteredServices.value = services;
-  }
-
   void filterServicesByLocation(String query) {
-    if (query.isEmpty) {
-      // If query is empty, show all services
-      filteredServices.value = services;
-    } else {
-      // Filter services where address contains the query (case-insensitive)
-      filteredServices.value = services.where((service) {
-        return service['address'].toString().toLowerCase().contains(query.toLowerCase());
-      }).toList();
-    }
+    filteredServices.value = _serviceController.filterServicesByLocation(query).obs;
   }
 }
