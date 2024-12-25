@@ -13,6 +13,11 @@ class SelectedLocationController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    reloadServices();
+  }
+
+  void reloadServices() async {
+    await _serviceController.fetchServices();
     filterServicesByLocation(selectedLocation);
   }
 

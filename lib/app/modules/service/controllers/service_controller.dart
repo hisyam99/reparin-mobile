@@ -41,9 +41,8 @@ class ServiceController extends GetxController {
     query = query.toLowerCase();
     return services.where((service) {
       String serviceAddress = service.address.toLowerCase();
-      // Pencocokan yang lebih longgar, misalnya mencocokkan bagian dari alamat
-      return serviceAddress.contains(query) ||
-          serviceAddress.split(',').any((part) => part.trim().contains(query));
+      // Pencocokan yang sangat longgar, cukup dengan mengandung kata yang dicari
+      return serviceAddress.contains(query);
     }).toList();
   }
 }

@@ -1,3 +1,4 @@
+// File 11: /lib/app/modules/selected_location/views/selected_location_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/selected_location_controller.dart';
@@ -16,6 +17,12 @@ class SelectedLocationView extends GetView<SelectedLocationController> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => controller.reloadServices(),
+          ),
+        ],
       ),
       body: Obx(() {
         if (controller.serviceList.isEmpty) {
