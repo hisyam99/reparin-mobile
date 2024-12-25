@@ -23,7 +23,7 @@ Future<void> main() async {
   await FirebaseMessagingHandler().initPushNotification();
   await FirebaseMessagingHandler().initLocalNotification();
   final AuthenticationController _authenticationController =
-  Get.put(AuthenticationController());
+      Get.put(AuthenticationController());
   Get.put(BooksuccessController());
   Get.put(SettingsController());
   Get.put(HomeController(), permanent: true);
@@ -33,6 +33,7 @@ Future<void> main() async {
   Get.put(ProfileController(), permanent: true);
   runApp(
     GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: "Reparin-Mobile",
       initialRoute:
           _authenticationController.isLoggedIn.value ? '/home' : '/login',

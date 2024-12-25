@@ -1,4 +1,4 @@
-package com.example.reparin_mobile
+package xyz.reparin
 
 import io.flutter.embedding.android.FlutterActivity
 
