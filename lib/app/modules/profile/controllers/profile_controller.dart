@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,7 +12,6 @@ class ProfileController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
-
   final profile = Rx<Profile>(Profile.empty());
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
@@ -39,21 +37,21 @@ class ProfileController extends GetxController {
           .listen(
         (DocumentSnapshot snapshot) {
           if (snapshot.exists) {
-            // Tambahkan debug prints yang lebih detail
             final data = snapshot.data() as Map<String, dynamic>;
             print('Raw Firestore data:');
             print('imagePath from Firestore: ${data['imagePath']}');
-
             try {
               profile.value = Profile.fromFirestore(snapshot);
               print('Profile after conversion:');
               print(
                   'Image Path in profile object: ${profile.value.imagePath.value}');
-
-              // Verify if the path is actually changing
               if (profile.value.imagePath.value.isEmpty) {
                 print('Warning: Image path is empty after conversion');
               }
+              // Update text controllers with Firestore data
+              nameController.text = profile.value.name.value;
+              phoneController.text = profile.value.phone.value;
+              emailController.text = profile.value.email.value;
             } catch (e) {
               print('Error converting Firestore data to Profile: $e');
             }
@@ -71,20 +69,13 @@ class ProfileController extends GetxController {
   Future<void> loadUserProfile() async {
     try {
       final User? currentUser = _auth.currentUser;
-
       if (currentUser != null) {
-        // Get email from Firebase Auth
         emailController.text = currentUser.email ?? '';
         profile.value.email.value = currentUser.email ?? '';
-
-        // Get additional data from Firestore
         final DocumentSnapshot doc =
             await _firestore.collection('users').doc(currentUser.uid).get();
-
         if (doc.exists) {
           profile.value = Profile.fromFirestore(doc);
-
-          // Update text controllers with Firestore data
           nameController.text = profile.value.name.value;
           phoneController.text = profile.value.phone.value;
         } else {
@@ -123,36 +114,28 @@ class ProfileController extends GetxController {
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
       if (image != null) {
         final File imageFile = File(image.path);
-
         // Upload to Firebase Storage
         final String userId = _auth.currentUser?.uid ?? '';
         final Reference ref =
             _storage.ref().child('profile_images/$userId.jpg');
-
         // Show loading indicator
         Get.dialog(
           const Center(child: CircularProgressIndicator()),
           barrierDismissible: false,
         );
-
         // Upload file
         await ref.putFile(imageFile);
-
         // Get download URL
         final String downloadURL = await ref.getDownloadURL();
-
         // Update Firestore - this will trigger the stream listener
         await _firestore
             .collection('users')
             .doc(userId)
             .update({'imagePath': downloadURL});
-
         // Close loading dialog
         Get.back();
-
         Get.snackbar(
           'Success',
           'Profile picture updated successfully',
@@ -177,13 +160,11 @@ class ProfileController extends GetxController {
     try {
       final userId = _auth.currentUser?.uid;
       if (userId == null) return false;
-
       final userData = {
         'name': profile.value.name.value,
         'phone': profile.value.phone.value,
         'imagePath': profile.value.imagePath.value,
       };
-
       await _firestore.collection('users').doc(userId).update(userData);
       return true;
     } catch (e) {
@@ -195,6 +176,44 @@ class ProfileController extends GetxController {
         colorText: Colors.red,
       );
       return false;
+    }
+  }
+
+  Future<void> deleteProfileImage() async {
+    try {
+      final userId = _auth.currentUser?.uid;
+      if (userId == null) return;
+
+      // Delete the image from Firebase Storage
+      final Reference ref = _storage.ref().child('profile_images/$userId.jpg');
+      await ref.delete();
+
+      // Update Firestore to remove the image path
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .update({'imagePath': ''});
+
+      // Update the local profile
+      profile.update((val) {
+        if (val != null) val.imagePath.value = '';
+      });
+
+      Get.snackbar(
+        'Success',
+        'Profile picture removed successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withOpacity(0.1),
+        colorText: Colors.green,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to remove profile picture: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.1),
+        colorText: Colors.red,
+      );
     }
   }
 

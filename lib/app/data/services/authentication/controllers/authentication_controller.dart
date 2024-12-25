@@ -24,7 +24,7 @@ class AuthenticationController extends GetxController {
   void onInit() {
     super.onInit();
     // Listen to auth state changes
-    user.bindStream(_auth.authStateChanges());
+    user.bindStream(  _auth.authStateChanges());
     ever(user, _initialScreen);
     checkLoginStatus(); // Periksa status login saat controller diinisialisasi
 

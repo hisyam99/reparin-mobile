@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:reparin_mobile/app/modules/navbar/views/navbar_view.dart';
-import 'package:cached_network_image/cached_network_image.dart'; // Import the package
+import 'package:cached_network_image/cached_network_image.dart';
 import '../controllers/profile_controller.dart';
 import '../../../data/services/authentication/controllers/authentication_controller.dart';
 
@@ -12,7 +12,6 @@ class ProfileViews extends GetView<ProfileController> {
   Widget build(BuildContext context) {
     final AuthenticationController authController =
         Get.find<AuthenticationController>();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -27,44 +26,80 @@ class ProfileViews extends GetView<ProfileController> {
       body: Obx(() {
         final imagePath = controller.profile.value.imagePath.value;
         final name = controller.profile.value.name.value;
-
         return Column(
           children: [
             const SizedBox(height: 20),
-
             // Profile Picture with CachedNetworkImage
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.grey[300]!,
-                  width: 2,
-                ),
-              ),
-              child: ClipOval(
-                child: imagePath.isNotEmpty &&
-                        Uri.tryParse(imagePath)?.hasAbsolutePath == true
-                    ? CachedNetworkImage(
-                        imageUrl: imagePath,
-                        fit: BoxFit.cover,
-                        errorWidget: (context, url, error) => Image.asset(
-                          'assets/default_avatar.png',
-                          fit: BoxFit.cover,
-                        ),
-                        placeholder: (context, url) => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      )
-                    : Image.asset(
-                        'assets/default_avatar.png',
+            Center(
+              child: Stack(
+                children: [
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: imagePath.isNotEmpty
+                            ? CachedNetworkImageProvider(imagePath)
+                            : const AssetImage('assets/default_avatar.png')
+                                as ImageProvider,
                         fit: BoxFit.cover,
                       ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.grey[200],
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.edit,
+                          size: 18,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return SafeArea(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    ListTile(
+                                      leading: const Icon(Icons.photo_library),
+                                      title: const Text('Choose from Gallery'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        controller.updateProfileImage();
+                                      },
+                                    ),
+                                    if (imagePath.isNotEmpty)
+                                      ListTile(
+                                        leading: const Icon(Icons.delete,
+                                            color: Colors.red),
+                                        title: const Text('Remove Photo',
+                                            style:
+                                                TextStyle(color: Colors.red)),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          controller.deleteProfileImage();
+                                        },
+                                      ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 10),
-
             // Display Name
             name.isEmpty
                 ? const SizedBox(
@@ -81,9 +116,7 @@ class ProfileViews extends GetView<ProfileController> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
             const SizedBox(height: 5),
-
             // Display Email
             Text(
               controller.profile.value.email.value,
@@ -92,9 +125,7 @@ class ProfileViews extends GetView<ProfileController> {
                 color: Colors.grey[600],
               ),
             ),
-
             const SizedBox(height: 30),
-
             // Profile Options List
             Expanded(
               child: ListView(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui';
-import 'dart:io';
 import '../controllers/profileView_controller.dart';
 
 class ProfileViewView extends GetView<ProfileViewController> {
@@ -15,11 +14,11 @@ class ProfileViewView extends GetView<ProfileViewController> {
           if (controller.profile.value.name.value.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
-
           controller.nameController.text = controller.profile.value.name.value;
-          controller.phoneController.text = controller.profile.value.phone.value;
-          controller.emailController.text = controller.profile.value.email.value;
-
+          controller.phoneController.text =
+              controller.profile.value.phone.value;
+          controller.emailController.text =
+              controller.profile.value.email.value;
           return Column(
             children: [
               Expanded(
@@ -47,7 +46,6 @@ class ProfileViewView extends GetView<ProfileViewController> {
                           ],
                         ),
                         const SizedBox(height: 24),
-
                         // Profile Picture with loading state
                         Center(
                           child: Stack(
@@ -57,13 +55,16 @@ class ProfileViewView extends GetView<ProfileViewController> {
                                 height: 100,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  image: controller.profile.value.imagePath.value.isNotEmpty
+                                  image: controller.profile.value.imagePath
+                                          .value.isNotEmpty
                                       ? DecorationImage(
-                                          image: FileImage(File(controller.profile.value.imagePath.value)),
+                                          image: NetworkImage(controller
+                                              .profile.value.imagePath.value),
                                           fit: BoxFit.cover,
                                         )
                                       : const DecorationImage(
-                                          image: AssetImage('assets/default_avatar.png'),
+                                          image: AssetImage(
+                                              'assets/default_avatar.png'),
                                           fit: BoxFit.cover,
                                         ),
                                 ),
@@ -89,21 +90,30 @@ class ProfileViewView extends GetView<ProfileViewController> {
                                               mainAxisSize: MainAxisSize.min,
                                               children: <Widget>[
                                                 ListTile(
-                                                  leading: const Icon(Icons.photo_library),
-                                                  title: const Text('Choose from Gallery'),
+                                                  leading: const Icon(
+                                                      Icons.photo_library),
+                                                  title: const Text(
+                                                      'Choose from Gallery'),
                                                   onTap: () {
                                                     Navigator.pop(context);
-                                                    controller.updateProfileImage();
+                                                    controller
+                                                        .updateProfileImage();
                                                   },
                                                 ),
-                                                if (controller.profile.value.imagePath.value.isNotEmpty)
+                                                if (controller.profile.value
+                                                    .imagePath.value.isNotEmpty)
                                                   ListTile(
-                                                    leading: const Icon(Icons.delete, color: Colors.red),
-                                                    title: const Text('Remove Photo', 
-                                                      style: TextStyle(color: Colors.red)),
+                                                    leading: const Icon(
+                                                        Icons.delete,
+                                                        color: Colors.red),
+                                                    title: const Text(
+                                                        'Remove Photo',
+                                                        style: TextStyle(
+                                                            color: Colors.red)),
                                                     onTap: () {
                                                       Navigator.pop(context);
-                                                      controller.deleteProfileImage();
+                                                      controller
+                                                          .deleteProfileImage();
                                                     },
                                                   ),
                                               ],
