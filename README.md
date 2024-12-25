@@ -1,5 +1,5 @@
 # Reparin
-## Modul 4 (Sensor-driven)
+## Modul UAP
 
 Tugas Kelompok Membuat Aplikasi Mobile Menggunakan Flutter
 
