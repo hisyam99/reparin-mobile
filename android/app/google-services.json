@@ -7,9 +7,81 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:995047399971:android:763927a6334fd9bb4c8796",
+        "android_client_info": {
+          "package_name": "com.example.reparin_mobi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "995047399971-kksgeubu4bnanhe901haes2f73k6ljmo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADA9_fVVRWtTQj-lro4b4qo_6ZA_ZkBEQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "995047399971-kksgeubu4bnanhe901haes2f73k6ljmo.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "995047399971-2hcoivkao4b880jf5dfi0bas8s08u2lf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "xyz.reparin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:995047399971:android:74bfa38d200b7d1b4c8796",
         "android_client_info": {
           "package_name": "com.example.reparin_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "995047399971-kksgeubu4bnanhe901haes2f73k6ljmo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADA9_fVVRWtTQj-lro4b4qo_6ZA_ZkBEQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "995047399971-kksgeubu4bnanhe901haes2f73k6ljmo.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "995047399971-2hcoivkao4b880jf5dfi0bas8s08u2lf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "xyz.reparin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:995047399971:android:2988271f3e4fe2234c8796",
+        "android_client_info": {
+          "package_name": "xyz.reparin"
         }
       },
       "oauth_client": [

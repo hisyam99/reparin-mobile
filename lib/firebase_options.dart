@@ -82,7 +82,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyADA9_fVVRWtTQj-lro4b4qo_6ZA_ZkBEQ',
-    appId: '1:995047399971:android:74bfa38d200b7d1b4c8796',
+    appId: '1:995047399971:android:2988271f3e4fe2234c8796',
     messagingSenderId: '995047399971',
     projectId: 'reparin-mobile-9ad64',
     storageBucket: 'reparin-mobile-9ad64.appspot.com',

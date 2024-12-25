@@ -266,65 +266,6 @@ class ServiceBookingController extends GetxController {
     );
   }
 
-  
-  // Future<void> syncPendingOrders() async {
-  //   if (isSyncing.value) return;
-
-  //   try {
-  //     isSyncing.value = true;
-  //     List<Map<String, dynamic>> pendingOrders = _localStorage.getPendingOrders();
-      
-  //     if (pendingOrders.isEmpty) return;
-
-  //     int successCount = 0;
-  //     int failureCount = 0;
-
-  //     for (int i = 0; i < pendingOrders.length; i++) {
-  //       try {
-  //         Map<String, dynamic> orderData = pendingOrders[i];
-  //         orderData['orderDate'] = DateTime.parse(orderData['orderDate']);
-          
-  //         await _firestore.collection('service_orders').add(orderData);
-  //         await _localStorage.removePendingOrder(i);
-  //         successCount++;
-          
-  //         await showBookingSuccessNotification();
-  //       } catch (e) {
-  //         print('Error syncing order $i: $e');
-  //         failureCount++;
-  //       }
-  //     }
-
-  //     _updatePendingOrdersCount();
-      
-  //     if (successCount > 0) {
-  //       Get.snackbar(
-  //         'Sync Complete',
-  //         'Successfully synced $successCount orders${failureCount > 0 ? '. Failed to sync $failureCount orders' : ''}',
-  //         snackPosition: SnackPosition.TOP,
-  //         duration: const Duration(seconds: 5),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     print('Error in syncPendingOrders: $e');
-  //     Get.snackbar(
-  //       'Sync Error',
-  //       'Failed to sync offline orders',
-  //       snackPosition: SnackPosition.TOP,
-  //     );
-  //   } finally {
-  //     isSyncing.value = false;
-  //   }
-  // }
-  
-  // @override
-  // void onClose() {
-  //   descriptionController.dispose();
-  //   addressController.dispose();
-  //   videoPlayerController.value?.dispose();
-  //   super.onClose();
-  // }
-
   Future<void> useCurrentLocation() async {
     try {
       isLoading.value = true;
