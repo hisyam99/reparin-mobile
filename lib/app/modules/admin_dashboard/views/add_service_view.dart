@@ -1,6 +1,8 @@
+// File 2: /lib/app/modules/admin_dashboard/views/add_service_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/add_service_controller.dart';
+import 'package:reparin_mobile/app/modules/address_search/views/address_search_view.dart';
 
 class AddServiceView extends GetView<AddServiceController> {
   const AddServiceView({super.key});
@@ -41,28 +43,7 @@ class AddServiceView extends GetView<AddServiceController> {
                 validator: (value) => _validateField(value, 'Price'),
               ),
               const SizedBox(height: 16),
-              _buildTextField(
-                controller: controller.longitudeController.value,
-                label: 'Longitude',
-                hint: 'Enter the longitude',
-                keyboardType: TextInputType.number,
-                validator: (value) => _validateField(value, 'Longitude'),
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                controller: controller.latitudeController.value,
-                label: 'Latitude',
-                hint: 'Enter the latitude',
-                keyboardType: TextInputType.number,
-                validator: (value) => _validateField(value, 'Latitude'),
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                controller: controller.addressController.value,
-                label: 'Address',
-                hint: 'Enter the service address',
-                validator: (value) => _validateField(value, 'Address'),
-              ),
+              _buildAddressSection(context),
               const SizedBox(height: 24),
               _buildSubmitButton(),
             ],
@@ -148,6 +129,39 @@ class AddServiceView extends GetView<AddServiceController> {
     );
   }
 
+  Widget _buildAddressSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Address',
+          style: Theme.of(Get.context!).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller.addressController.value,
+          decoration: InputDecoration(
+            hintText: 'Enter the service address',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            filled: true,
+            fillColor: Theme.of(Get.context!).inputDecorationTheme.fillColor,
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () => Get.to(() => AddressSearchView(
+                    onAddressSelected: (selectedAddress) {
+                      controller.addressController.value.text = selectedAddress;
+                      Get.back();
+                    },
+                  )),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildSubmitButton() {
     return SizedBox(
       width: double.infinity,
@@ -196,8 +210,6 @@ class AddServiceView extends GetView<AddServiceController> {
     if (controller.titleController.value.text.isEmpty ||
         controller.providerController.value.text.isEmpty ||
         controller.priceController.value.text.isEmpty ||
-        controller.longitudeController.value.text.isEmpty ||
-        controller.latitudeController.value.text.isEmpty ||
         controller.addressController.value.text.isEmpty) {
       Get.snackbar(
         'Error',

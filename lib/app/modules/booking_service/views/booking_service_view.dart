@@ -1,7 +1,7 @@
 // File 1: /lib/app/modules/booking_service/views/booking_service_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:reparin_mobile/app/modules/booking_service/views/AddressSearchView.dart';
+import 'package:reparin_mobile/app/modules/address_search/views/address_search_view.dart';
 import 'package:reparin_mobile/app/modules/connection/controllers/connection_controller.dart';
 import 'package:video_player/video_player.dart';
 import '../controllers/booking_service_controller.dart';
