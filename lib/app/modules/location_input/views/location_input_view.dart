@@ -49,7 +49,8 @@ class GetConnectView extends GetView<GetConnectController> {
       performSearch(selectedAddress);
       Get.toNamed(
         '/selected-location',
-        arguments: selectedAddress,
+        arguments:
+            selectedAddress, // Menggunakan selectedAddress langsung sebagai argumen
       );
     }
 

@@ -1,3 +1,4 @@
+// File 15: /lib/app/modules/service/controllers/service_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,7 +6,6 @@ import '../../../data/models/service_model.dart';
 
 class ServiceController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   final RxList<Service> services = <Service>[].obs;
   final RxBool isLoading = false.obs;
 
@@ -38,8 +38,12 @@ class ServiceController extends GetxController {
     if (query.isEmpty) {
       return services;
     }
+    query = query.toLowerCase();
     return services.where((service) {
-      return service.address.toLowerCase().contains(query.toLowerCase());
+      String serviceAddress = service.address.toLowerCase();
+      // Pencocokan yang lebih longgar, misalnya mencocokkan bagian dari alamat
+      return serviceAddress.contains(query) ||
+          serviceAddress.split(',').any((part) => part.trim().contains(query));
     }).toList();
   }
 }
