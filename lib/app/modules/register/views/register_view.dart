@@ -15,7 +15,7 @@ class RegisterView extends GetView<AuthenticationController> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 80),
+              const SizedBox(height: 150),
               // Greeting text
               const Text(
                 "Create Account",

@@ -19,6 +19,7 @@ class LoginView extends GetView<LoginController> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const SizedBox(height: 150),
               const Text(
                 "Sign In",
                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
@@ -109,35 +110,35 @@ class LoginView extends GetView<LoginController> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Or sign in with',
-                style: TextStyle(color: Colors.grey),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.apple, size: 40),
-                    onPressed: () {
-                      // Apple sign-in logic
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.messenger, size: 40),
-                    onPressed: () {
-                      // Google sign-in logic
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.facebook, size: 40),
-                    onPressed: () {
-                      // Facebook sign-in logic
-                    },
-                  ),
-                ],
-              ),
+              // const Text(
+              //   'Or sign in with',
+              //   style: TextStyle(color: Colors.grey),
+              //   textAlign: TextAlign.center,
+              // ),
+              // const SizedBox(height: 16),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //   children: [
+              //     IconButton(
+              //       icon: const Icon(Icons.apple, size: 40),
+              //       onPressed: () {
+              //         // Apple sign-in logic
+              //       },
+              //     ),
+              //     IconButton(
+              //       icon: const Icon(Icons.messenger, size: 40),
+              //       onPressed: () {
+              //         // Google sign-in logic
+              //       },
+              //     ),
+              //     IconButton(
+              //       icon: const Icon(Icons.facebook, size: 40),
+              //       onPressed: () {
+              //         // Facebook sign-in logic
+              //       },
+              //     ),
+              //   ],
+              // ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

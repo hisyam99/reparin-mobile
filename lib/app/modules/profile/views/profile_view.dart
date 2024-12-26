@@ -140,34 +140,10 @@ class ProfileViews extends GetView<ProfileController> {
                   ),
                   _buildProfileOption(
                     context,
-                    title: 'Manage Address',
-                    icon: Icons.location_on,
-                    onTap: () {
-                      // Navigate to manage address
-                    },
-                  ),
-                  _buildProfileOption(
-                    context,
-                    title: 'Payment Methods',
-                    icon: Icons.payment,
-                    onTap: () {
-                      // Navigate to payment methods
-                    },
-                  ),
-                  _buildProfileOption(
-                    context,
                     title: 'My Bookings',
                     icon: Icons.calendar_today,
                     onTap: () {
                       Get.toNamed('/bookupcoming');
-                    },
-                  ),
-                  _buildProfileOption(
-                    context,
-                    title: 'My Wallet',
-                    icon: Icons.account_balance_wallet,
-                    onTap: () {
-                      // Navigate to wallet
                     },
                   ),
                   _buildProfileOption(
@@ -184,14 +160,6 @@ class ProfileViews extends GetView<ProfileController> {
                     icon: Icons.help_outline,
                     onTap: () {
                       Get.toNamed('/help_center_faq');
-                    },
-                  ),
-                  _buildProfileOption(
-                    context,
-                    title: 'Privacy Policy',
-                    icon: Icons.privacy_tip,
-                    onTap: () {
-                      // Navigate to privacy policy
                     },
                   ),
                   _buildProfileOption(
