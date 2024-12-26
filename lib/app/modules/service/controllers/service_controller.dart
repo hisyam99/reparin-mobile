@@ -1,4 +1,4 @@
-// File 15: /lib/app/modules/service/controllers/service_controller.dart
+// File 2: /lib/app/modules/service/controllers/service_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -41,8 +41,31 @@ class ServiceController extends GetxController {
     query = query.toLowerCase();
     return services.where((service) {
       String serviceAddress = service.address.toLowerCase();
-      // Pencocokan yang sangat longgar, cukup dengan mengandung kata yang dicari
       return serviceAddress.contains(query);
     }).toList();
+  }
+
+  Future<void> toggleBookmark(String serviceId) async {
+    try {
+      final serviceIndex =
+          services.indexWhere((service) => service.id == serviceId);
+      if (serviceIndex != -1) {
+        final updatedService = services[serviceIndex]
+            .copyWith(isBookmarked: !services[serviceIndex].isBookmarked);
+        services[serviceIndex] = updatedService;
+        await _firestore
+            .collection('services')
+            .doc(serviceId)
+            .update({'isBookmarked': updatedService.isBookmarked});
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to update bookmark: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.1),
+        colorText: Colors.red,
+      );
+    }
   }
 }

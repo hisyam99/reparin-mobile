@@ -1,3 +1,4 @@
+// File 5: /lib/app/data/models/service_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Service {
@@ -9,6 +10,7 @@ class Service {
   final double longitude;
   final double latitude;
   final String address;
+  final bool isBookmarked;
 
   Service({
     required this.id,
@@ -19,6 +21,7 @@ class Service {
     required this.longitude,
     required this.latitude,
     required this.address,
+    this.isBookmarked = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -30,6 +33,7 @@ class Service {
         'longitude': longitude,
         'latitude': latitude,
         'address': address,
+        'isBookmarked': isBookmarked,
       };
 
   factory Service.fromFirestore(DocumentSnapshot doc) {
@@ -43,6 +47,32 @@ class Service {
       longitude: (data['longitude'] ?? 0).toDouble(),
       latitude: (data['latitude'] ?? 0).toDouble(),
       address: data['address'] ?? '',
+      isBookmarked: data['isBookmarked'] ?? false,
+    );
+  }
+
+  // Add the copyWith method
+  Service copyWith({
+    String? id,
+    String? title,
+    String? provider,
+    double? price,
+    String? image,
+    double? longitude,
+    double? latitude,
+    String? address,
+    bool? isBookmarked,
+  }) {
+    return Service(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      provider: provider ?? this.provider,
+      price: price ?? this.price,
+      image: image ?? this.image,
+      longitude: longitude ?? this.longitude,
+      latitude: latitude ?? this.latitude,
+      address: address ?? this.address,
+      isBookmarked: isBookmarked ?? this.isBookmarked,
     );
   }
 }

@@ -1,3 +1,4 @@
+// File 1: /lib/app/modules/service/views/service_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/service_controller.dart';
@@ -62,6 +63,13 @@ class ServiceView extends GetView<ServiceController> {
                       Text('Price: \$${service.price.toStringAsFixed(2)}'),
                       Text('Address: ${service.address}'),
                     ],
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(
+                      service.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                      color: service.isBookmarked ? Colors.blue : null,
+                    ),
+                    onPressed: () => controller.toggleBookmark(service.id),
                   ),
                 ),
               );

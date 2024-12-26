@@ -1,7 +1,8 @@
+// File 3: /lib/app/modules/popular_service/views/popular_service_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:reparin_mobile/app/modules/popular_service/controllers/popular_service__controller.dart';
 import 'package:reparin_mobile/app/routes/app_pages.dart';
-import '../controllers/popular_service__controller.dart';
 import '../../service/controllers/service_controller.dart';
 
 class PopularServiceView extends GetView<PopularServiceController> {
@@ -10,7 +11,6 @@ class PopularServiceView extends GetView<PopularServiceController> {
   @override
   Widget build(BuildContext context) {
     final ServiceController serviceController = Get.find<ServiceController>();
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -29,7 +29,7 @@ class PopularServiceView extends GetView<PopularServiceController> {
       body: RefreshIndicator(
         onRefresh: () async {
           await serviceController.fetchServices();
-          controller.serviceList.value = serviceController.services;
+          // The serviceList will be updated automatically through the ever listener
         },
         child: Obx(() {
           if (controller.serviceList.isEmpty) {
@@ -113,6 +113,13 @@ class PopularServiceView extends GetView<PopularServiceController> {
                       },
                     );
                   },
+                  trailing: IconButton(
+                    icon: Icon(
+                      item.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                      color: item.isBookmarked ? Colors.blue : null,
+                    ),
+                    onPressed: () => controller.toggleBookmark(item.id),
+                  ),
                 ),
               );
             },
