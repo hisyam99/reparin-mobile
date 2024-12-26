@@ -5,9 +5,13 @@ import 'package:reparin_mobile/app/modules/selected_location/bindings/selected_l
 import 'package:reparin_mobile/app/modules/selected_location/views/selected_location_view.dart';
 import 'package:reparin_mobile/app/modules/service/views/service_view.dart';
 import '../data/services/authentication/bindings/authentication_binding.dart';
+import '../modules/admin_chat/bindings/admin_chat_binding.dart';
+import '../modules/admin_chat/views/admin_chat_view.dart';
 import '../modules/booking_service/views/booking_service_view.dart';
 import '../modules/category/bindings/category_binding.dart';
 import '../modules/category/views/category_view.dart';
+import '../modules/chat/bindings/chat_binding.dart';
+import '../modules/chat/views/chat_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/homeMerdeka/bindings/home_binding.dart';
@@ -220,7 +224,7 @@ class AppPages {
       page: () => const PopularServiceView(),
       binding: PopularServiceBinding(),
     ),
-    GetPage(name: _Paths.MESSAGE, page: () => const MessageView(), bindings: [
+    GetPage(name: _Paths.MESSAGE, page: () => MessageView(), bindings: [
       MessageBinding(),
       NavbarBinding(),
     ]),
@@ -368,6 +372,18 @@ class AppPages {
           services: arguments['services'],
         );
       },
+    ),
+    GetPage(
+      name: '/admin-chat',
+      page: () => const AdminChatView(),
+      binding: AdminChatBinding(),
+    ),
+    GetPage(
+      name: '/chat',
+      page: () => ChatView(
+          serviceId: Get.parameters['serviceId']!,
+          receiverId: Get.parameters['receiverId']!),
+      binding: ChatBinding(),
     ),
   ];
 }

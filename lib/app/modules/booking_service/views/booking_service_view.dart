@@ -1,11 +1,12 @@
-// File 1: /lib/app/modules/booking_service/views/booking_service_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:reparin_mobile/app/modules/address_search/views/address_search_view.dart';
 import 'package:reparin_mobile/app/modules/connection/controllers/connection_controller.dart';
 import 'package:video_player/video_player.dart';
+import '../../chat/bindings/chat_binding.dart';
 import '../controllers/booking_service_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../chat/views/chat_view.dart';
 
 class ServiceBookingView extends GetView<ServiceBookingController> {
   final String serviceType;
@@ -14,6 +15,7 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
   final double longitude;
   final double latitude;
   final String address;
+
   const ServiceBookingView({
     super.key,
     required this.serviceType,
@@ -52,6 +54,20 @@ class ServiceBookingView extends GetView<ServiceBookingController> {
           style: const TextStyle(
               color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.chat, color: Colors.black),
+            onPressed: () {
+              Get.to(
+                () => ChatView(
+                  serviceId: 'service_${serviceType}_${providerName}',
+                  receiverId: 'provider_${providerName}',
+                ),
+                binding: ChatBinding(),
+              );
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: Obx(() {

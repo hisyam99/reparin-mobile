@@ -17,6 +17,12 @@ class AdminDashboardView extends GetView<AdminDashboardController> {
               Get.toNamed('/admin-dashboard/add-service');
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.chat),
+            onPressed: () {
+              Get.toNamed('/admin-chat');
+            },
+          ),
         ],
       ),
       body: Obx(() {

@@ -1,7 +1,9 @@
+// File 2: /lib/app/modules/message/views/message_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/message_controller.dart';
-import 'package:reparin_mobile/app/modules/navbar/views/navbar_view.dart'; // Assuming the custom navigation bar exists
+import '../../chat/views/chat_view.dart';
+import '../../chat/bindings/chat_binding.dart';
 
 class MessageView extends GetView<MessageController> {
   const MessageView({super.key});
@@ -32,11 +34,15 @@ class MessageView extends GetView<MessageController> {
         ],
       ),
       body: Obx(() {
+        if (controller.messageList.isEmpty) {
+          return const Center(child: Text('No messages yet.'));
+        }
         return ListView.builder(
           padding: const EdgeInsets.all(16.0),
           itemCount: controller.messageList.length,
           itemBuilder: (context, index) {
-            final item = controller.messageList[index];
+            final serviceId = controller.messageList.keys.elementAt(index);
+            final message = controller.messageList[serviceId]!;
             return Card(
               margin: const EdgeInsets.only(bottom: 16.0),
               shape: RoundedRectangleBorder(
@@ -45,17 +51,11 @@ class MessageView extends GetView<MessageController> {
               elevation: 2.0,
               child: ListTile(
                 contentPadding: const EdgeInsets.all(16.0),
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Image.asset(
-                    item['image'],
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                leading: const Icon(Icons.message,
+                    color: Colors
+                        .blue), // You can replace this with an image if you have one
                 title: Text(
-                  item['title'],
+                  message['title'],
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -66,15 +66,15 @@ class MessageView extends GetView<MessageController> {
                   children: [
                     const SizedBox(height: 4),
                     Text(
-                      item['price'],
+                      'Last Message: ${message['lastMessage']}',
                       style: const TextStyle(
                         fontSize: 14,
-                        color: Colors.green,
+                        color: Colors.grey,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      item['provider'],
+                      message['provider'],
                       style: const TextStyle(
                         fontSize: 14,
                         color: Colors.grey,
@@ -82,16 +82,27 @@ class MessageView extends GetView<MessageController> {
                     ),
                   ],
                 ),
-                trailing: const Icon(
-                  Icons.message_outlined,
-                  color: Color(0xFF0093B7),
+                trailing: Text(
+                  message['timestamp'].toDate().toString(),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
                 ),
+                onTap: () {
+                  Get.to(
+                    () => ChatView(
+                      serviceId: message['serviceId'],
+                      receiverId: 'provider_${message['provider']}',
+                    ),
+                    binding: ChatBinding(),
+                  );
+                },
               ),
             );
           },
         );
       }),
-      bottomNavigationBar: const CustomBottomNavigationBar(), // Custom bottom navigation bar
     );
   }
 }
